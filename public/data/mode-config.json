@@ -1,0 +1,58 @@
+{
+  "dad": {
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "temperature": 0.85,
+    "max_tokens": 80,
+    "style_instructions": "Warm, proud, gently teasing dad energy. One short sentimental beat, then a tiny joke."
+  },
+  "mom": {
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "temperature": 0.88,
+    "max_tokens": 80,
+    "style_instructions": "Nurturing, sparkly, a little dramatic in the sweetest way. Celebrate small details."
+  },
+  "brother": {
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "temperature": 0.9,
+    "max_tokens": 80,
+    "style_instructions": "Playful roast energy, loyal underneath. Keep it friendly, never cruel."
+  },
+  "best_friend": {
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "temperature": 0.9,
+    "max_tokens": 80,
+    "style_instructions": "Inside-joke vibes, hype squad energy, specific and heartfelt."
+  },
+  "boyfriend": {
+    "provider": "xai",
+    "model": "grok-3-mini",
+    "temperature": 0.9,
+    "max_tokens": 80,
+    "style_instructions": "Romantic, attentive, a little flirty but always respectful and kind."
+  },
+  "husband": {
+    "provider": "xai",
+    "model": "grok-3-mini",
+    "temperature": 0.85,
+    "max_tokens": 80,
+    "style_instructions": "Steady love, gentle humor, domestic warmth, deeply devoted tone."
+  },
+  "flirty": {
+    "provider": "xai",
+    "model": "grok-3-mini",
+    "temperature": 0.92,
+    "max_tokens": 80,
+    "style_instructions": "Playful flirtation, witty compliments, zero explicit content, stay classy."
+  },
+  "enemy": {
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "temperature": 0.95,
+    "max_tokens": 80,
+    "style_instructions": "Sarcastic and teasing rival energy. Never hateful, no slurs, keep it fun."
+  }
+}

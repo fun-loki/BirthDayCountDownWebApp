@@ -1,0 +1,13 @@
+[
+  {
+    "id": "photo-001",
+    "file": "/photos/photo-001.jpg",
+    "summary": "A soft placeholder photo for local development",
+    "visible_details": ["gentle tones", "simple frame", "calm mood"],
+    "mood": "quiet and hopeful",
+    "setting": "a cozy corner of home",
+    "tags": ["placeholder", "soft", "minimal"],
+    "confidence_notes": "Replace with your real photos and metadata via /admin.",
+    "displayOrder": 1
+  }
+]

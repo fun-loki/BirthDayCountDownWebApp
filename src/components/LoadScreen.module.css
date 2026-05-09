@@ -1,0 +1,26 @@
+.root {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.card {
+  max-width: 20rem;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(244, 165, 184, 0.25);
+}
+
+.title {
+  font-family: var(--font-display);
+  margin: 0 0 0.5rem;
+}
+
+.text {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}

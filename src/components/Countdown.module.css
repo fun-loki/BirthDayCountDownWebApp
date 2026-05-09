@@ -1,0 +1,66 @@
+.root {
+  text-align: center;
+  padding: 1.25rem 1rem 0.5rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.75rem, 5vw, 2.35rem);
+  letter-spacing: 0.02em;
+  margin: 0 0 0.35rem;
+  color: var(--cream);
+  text-shadow: 0 2px 24px var(--shadow);
+}
+
+.subtitle {
+  margin: 0 auto 1.25rem;
+  max-width: 22rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+  max-width: 22rem;
+  margin: 0 auto;
+}
+
+.cell {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(244, 165, 184, 0.25);
+  border-radius: var(--radius);
+  padding: 0.65rem 0.35rem;
+  backdrop-filter: blur(8px);
+}
+
+.value {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 6vw, 2rem);
+  color: var(--rose);
+  line-height: 1.1;
+}
+
+.label {
+  margin-top: 0.2rem;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+.done {
+  margin-top: 1rem;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  color: var(--rose-deep);
+}
+
+.invalid {
+  color: #ffb4b4;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
