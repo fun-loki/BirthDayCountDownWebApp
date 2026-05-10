@@ -1,7 +1,7 @@
 import type { ModeConfigFile, Photo } from './types.js'
 import { apiLog } from './log.js'
-import photosData from '../../public/data/photos.json'
-import modeConfigData from '../../public/data/mode-config.json'
+import photosData from '../../public/data/photos.json' with { type: 'json' }
+import modeConfigData from '../../public/data/mode-config.json' with { type: 'json' }
 
 let photos: Photo[] | null = null
 let modeConfig: ModeConfigFile | null = null
