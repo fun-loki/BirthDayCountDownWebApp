@@ -1,6 +1,6 @@
-import { SHARED_SYSTEM_PROMPT, buildUserPrompt, limitWords } from './prompts'
-import type { ModeConfigEntry, Photo } from '../types'
-import { getRecentCaptions, pushCaption } from '../captionHistory'
+import { SHARED_SYSTEM_PROMPT, buildUserPrompt, limitWords } from './prompts.js'
+import type { ModeConfigEntry, Photo } from '../types.js'
+import { getRecentCaptions, pushCaption } from '../captionHistory.js'
 
 type ChatMessage =
   | { role: 'system'; content: string }

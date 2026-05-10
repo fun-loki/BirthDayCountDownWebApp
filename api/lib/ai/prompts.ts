@@ -1,4 +1,4 @@
-import type { Photo } from '../types'
+import type { Photo } from '../types.js'
 
 export const SHARED_SYSTEM_PROMPT = `You write short Instagram-style captions for a birthday countdown site.
 Rules:

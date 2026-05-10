@@ -1,10 +1,10 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { randomUUID } from 'node:crypto'
-import { CAPTION_MODES, type CaptionRequestBody, type CaptionMode } from './lib/types'
-import { getModeConfig, getPhotos } from './lib/dataCache'
-import { cacheKeyForCaption, captionCacheGet, captionCacheSet } from './lib/ttlCache'
-import { generateCaptionText, routeProviderForMode } from './lib/ai/providers'
-import { apiLog } from './lib/log'
+import { CAPTION_MODES, type CaptionRequestBody, type CaptionMode } from './lib/types.js'
+import { getModeConfig, getPhotos } from './lib/dataCache.js'
+import { cacheKeyForCaption, captionCacheGet, captionCacheSet } from './lib/ttlCache.js'
+import { generateCaptionText, routeProviderForMode } from './lib/ai/providers.js'
+import { apiLog } from './lib/log.js'
 
 function isCaptionMode(m: string): m is CaptionMode {
   return (CAPTION_MODES as readonly string[]).includes(m)

@@ -1,5 +1,5 @@
-import type { ModeConfigFile, Photo } from './types'
-import { apiLog } from './log'
+import type { ModeConfigFile, Photo } from './types.js'
+import { apiLog } from './log.js'
 import photosData from '../../public/data/photos.json'
 import modeConfigData from '../../public/data/mode-config.json'
 

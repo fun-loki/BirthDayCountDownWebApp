@@ -3,8 +3,8 @@ import { randomUUID } from 'node:crypto'
 import { readFileSync, unlinkSync } from 'node:fs'
 import formidable from 'formidable'
 import type { File } from 'formidable'
-import type { AnalyzePhotoItem, AnalyzeResponseBody } from './lib/types'
-import { apiLog } from './lib/log'
+import type { AnalyzePhotoItem, AnalyzeResponseBody } from './lib/types.js'
+import { apiLog } from './lib/log.js'
 
 export const config = {
   api: {
