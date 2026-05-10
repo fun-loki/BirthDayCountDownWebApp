@@ -42,11 +42,11 @@ Return a single JSON object with keys:
 No markdown, no extra keys. Output only valid JSON.`
 
   const genAI = new GoogleGenerativeAI(opts.apiKey)
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
 
   const prompt = `${system}\n\nDescribe this image for caption metadata.`
 
-  apiLog('info', 'vision_gemini_request', { mime: opts.mime, model: 'gemini-1.5-flash' })
+  apiLog('info', 'vision_gemini_request', { mime: opts.mime, model: 'gemini-2.0-flash' })
 
   try {
     const result = await model.generateContent([
@@ -78,7 +78,7 @@ No markdown, no extra keys. Output only valid JSON.`
       : []
     const tags = Array.isArray(parsed.tags) ? parsed.tags.map(String) : []
 
-    apiLog('info', 'vision_gemini_success', { mime: opts.mime, model: 'gemini-1.5-flash' })
+    apiLog('info', 'vision_gemini_success', { mime: opts.mime, model: 'gemini-2.0-flash' })
 
     return {
       summary: String(parsed.summary ?? ''),
@@ -90,7 +90,7 @@ No markdown, no extra keys. Output only valid JSON.`
     }
   } catch (e) {
     const message = e instanceof Error ? e.message : 'Gemini vision failed'
-    apiLog('error', 'vision_gemini_failed', { mime: opts.mime, model: 'gemini-1.5-flash', error: message })
+    apiLog('error', 'vision_gemini_failed', { mime: opts.mime, model: 'gemini-2.0-flash', error: message })
     throw new Error(`Gemini vision error: ${message}`)
   }
 }
