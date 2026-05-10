@@ -1,6 +1,7 @@
 import type { ModeConfigFile, Photo } from './types'
 import { apiLog } from './log'
-import { readPublicRelative } from './readData'
+import photosData from '../../public/data/photos.json'
+import modeConfigData from '../../public/data/mode-config.json'
 
 let photos: Photo[] | null = null
 let modeConfig: ModeConfigFile | null = null
@@ -8,7 +9,7 @@ let loggedWarm = false
 
 export function getPhotos(): Photo[] {
   if (!photos) {
-    photos = JSON.parse(readPublicRelative('data/photos.json')) as Photo[]
+    photos = photosData as Photo[]
   }
   maybeLogWarm()
   return photos
@@ -16,7 +17,7 @@ export function getPhotos(): Photo[] {
 
 export function getModeConfig(): ModeConfigFile {
   if (!modeConfig) {
-    modeConfig = JSON.parse(readPublicRelative('data/mode-config.json')) as ModeConfigFile
+    modeConfig = modeConfigData as ModeConfigFile
   }
   maybeLogWarm()
   return modeConfig

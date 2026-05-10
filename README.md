@@ -19,22 +19,13 @@ Admin   → POST /api/analyze-photos (multipart images)
 ## Setup
 
 1. **Install**
-
-   ```bash
+  ```bash
    npm install
-   ```
-
+  ```
 2. **Environment**
-
-   Copy `.env.example` to `.env.local` (or configure vars in the Vercel dashboard):
-
-   ```env
-   OPENAI_API_KEY=...
-   XAI_API_KEY=...
-   ```
-
-   - `OPENAI_API_KEY` is required for admin vision analysis and for caption modes: dad, mom, brother, best_friend, enemy.
-   - `XAI_API_KEY` is required for caption modes: boyfriend, husband, flirty.
+  Copy `.env.example` to `.env.local` (or configure vars in the Vercel dashboard):
+  - `OPENAI_API_KEY` is required for admin vision analysis and for caption modes: dad, mom, brother, best_friend, enemy.
+  - `XAI_API_KEY` is required for caption modes: boyfriend, husband, flirty.
 
 ## Local development
 
@@ -54,7 +45,7 @@ Use the Vercel CLI so `/api` routes work locally:
 npx vercel dev
 ```
 
-This serves the app and serverless functions (default port is often `3000`). **`vite.config.ts` does not set a default `/api` proxy** so `vercel dev` never proxies API traffic back into Vite (which used to break with “invalid JS syntax” on `index.html` when the guessed port matched Vite’s real `--port`).
+This serves the app and serverless functions (default port is often `3000`). `**vite.config.ts` does not set a default `/api` proxy** so `vercel dev` never proxies API traffic back into Vite (which used to break with “invalid JS syntax” on `index.html` when the guessed port matched Vite’s real `--port`).
 
 For a **split** setup (Vite HMR on `5173` + `vercel dev` for APIs), run `vercel dev` in one terminal, then in another:
 
@@ -101,13 +92,15 @@ Serverless functions live in `/api`; static assets and JSON are served from `dis
 
 ## Scripts
 
-| Script            | Purpose                          |
-| ----------------- | -------------------------------- |
-| `npm run dev`     | Vite dev server                  |
-| `npm run build`   | `tsc -b` + production bundle     |
-| `npm run preview` | Preview the production build     |
-| `npm run lint`    | ESLint                           |
-| `npm run typecheck:api` | Typecheck `api/` only      |
+
+| Script                  | Purpose                      |
+| ----------------------- | ---------------------------- |
+| `npm run dev`           | Vite dev server              |
+| `npm run build`         | `tsc -b` + production bundle |
+| `npm run preview`       | Preview the production build |
+| `npm run lint`          | ESLint                       |
+| `npm run typecheck:api` | Typecheck `api/` only        |
+
 
 ## Project layout
 
@@ -127,3 +120,4 @@ api/
   analyze-photos.ts
   lib/            # cache, logging, AI helpers
 ```
+
