@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto'
 import { readFileSync, unlinkSync } from 'node:fs'
 import formidable from 'formidable'
 import type { File } from 'formidable'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 import type { AnalyzePhotoItem, AnalyzeResponseBody } from './lib/types.js'
 import { apiLog } from './lib/log.js'
 
@@ -29,7 +30,6 @@ async function visionDescribe(opts: {
 }): Promise<Omit<AnalyzePhotoItem, 'id' | 'file' | 'displayOrder'>> {
   const buffer = readFileSync(opts.imagePath)
   const b64 = buffer.toString('base64')
-  const dataUrl = `data:${opts.mime};base64,${b64}`
 
   const system = `You analyze photos for a private birthday countdown site.
 Return a single JSON object with keys:
@@ -39,65 +39,59 @@ Return a single JSON object with keys:
 - setting (string)
 - tags (array of short strings, 3-8 items)
 - confidence_notes (string, optional caveats or empty string)
-No markdown, no extra keys.`
+No markdown, no extra keys. Output only valid JSON.`
 
-  const res = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${opts.apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      temperature: 0.4,
-      max_tokens: 500,
-      response_format: { type: 'json_object' },
-      messages: [
-        { role: 'system', content: system },
-        {
-          role: 'user',
-          content: [
-            { type: 'text', text: 'Describe this image for caption metadata.' },
-            {
-              type: 'image_url',
-              image_url: { url: dataUrl },
-            },
-          ],
+  const genAI = new GoogleGenerativeAI(opts.apiKey)
+  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+
+  const prompt = `${system}\n\nDescribe this image for caption metadata.`
+
+  apiLog('info', 'vision_gemini_request', { mime: opts.mime, model: 'gemini-1.5-flash' })
+
+  try {
+    const result = await model.generateContent([
+      prompt,
+      {
+        inlineData: {
+          mimeType: opts.mime,
+          data: b64,
         },
-      ],
-    }),
-  })
+      },
+    ])
 
-  const raw = await res.text()
-  if (!res.ok) {
-    throw new Error(`Vision HTTP ${res.status}: ${raw.slice(0, 400)}`)
-  }
-  const data = JSON.parse(raw) as {
-    choices?: Array<{ message?: { content?: string } }>
-  }
-  const content = data.choices?.[0]?.message?.content
-  if (!content) throw new Error('Empty vision response')
-  const parsed = JSON.parse(content) as {
-    summary?: string
-    visible_details?: unknown
-    mood?: string
-    setting?: string
-    tags?: unknown
-    confidence_notes?: string
-  }
+    const response = await result.response
+    const text = response.text()
 
-  const details = Array.isArray(parsed.visible_details)
-    ? parsed.visible_details.map(String)
-    : []
-  const tags = Array.isArray(parsed.tags) ? parsed.tags.map(String) : []
+    if (!text) throw new Error('Empty Gemini response')
 
-  return {
-    summary: String(parsed.summary ?? ''),
-    visible_details: details,
-    mood: String(parsed.mood ?? ''),
-    setting: String(parsed.setting ?? ''),
-    tags,
-    confidence_notes: String(parsed.confidence_notes ?? ''),
+    const parsed = JSON.parse(text) as {
+      summary?: string
+      visible_details?: unknown
+      mood?: string
+      setting?: string
+      tags?: unknown
+      confidence_notes?: string
+    }
+
+    const details = Array.isArray(parsed.visible_details)
+      ? parsed.visible_details.map(String)
+      : []
+    const tags = Array.isArray(parsed.tags) ? parsed.tags.map(String) : []
+
+    apiLog('info', 'vision_gemini_success', { mime: opts.mime, model: 'gemini-1.5-flash' })
+
+    return {
+      summary: String(parsed.summary ?? ''),
+      visible_details: details,
+      mood: String(parsed.mood ?? ''),
+      setting: String(parsed.setting ?? ''),
+      tags,
+      confidence_notes: String(parsed.confidence_notes ?? ''),
+    }
+  } catch (e) {
+    const message = e instanceof Error ? e.message : 'Gemini vision failed'
+    apiLog('error', 'vision_gemini_failed', { mime: opts.mime, model: 'gemini-1.5-flash', error: message })
+    throw new Error(`Gemini vision error: ${message}`)
   }
 }
 
@@ -115,9 +109,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return
   }
 
-  const apiKey = process.env.OPENAI_API_KEY ?? ''
+  const apiKey = process.env.GEMINI_API_KEY ?? ''
   if (!apiKey) {
-    res.status(500).json({ error: 'OPENAI_API_KEY is not configured' })
+    res.status(500).json({ error: 'GEMINI_API_KEY is not configured' })
     return
   }
 
