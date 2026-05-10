@@ -1,12 +1,14 @@
 import styles from './PhotoHero.module.css'
+import { RotatePhotoButton } from './RotatePhotoButton'
 
 type Props = {
   src: string
   alt: string
   preloadSrc: string[]
+  onRotate?: () => void
 }
 
-export function PhotoHero({ src, alt, preloadSrc }: Props) {
+export function PhotoHero({ src, alt, preloadSrc, onRotate }: Props) {
   return (
     <div className={styles.wrap}>
       <div className={styles.frame}>
@@ -18,6 +20,7 @@ export function PhotoHero({ src, alt, preloadSrc }: Props) {
           decoding="async"
           fetchPriority="high"
         />
+        {onRotate && <RotatePhotoButton onClick={onRotate} />}
       </div>
       <div className={styles.preload} aria-hidden>
         {preloadSrc.map((p) => (

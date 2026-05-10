@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Countdown } from '../components/Countdown'
 import { PhotoHero } from '../components/PhotoHero'
 import { ModeSelector } from '../components/ModeSelector'
@@ -8,7 +8,8 @@ import { useStaticData } from '../hooks/useStaticData'
 import { useCountdown } from '../hooks/useCountdown'
 import { useHourlyTick } from '../hooks/useHourlyTick'
 import { useCaptionsForPhoto } from '../hooks/useCaptionsForPhoto'
-import { neighborIndices, selectHourlyPhoto } from '../lib/hourlyPhoto'
+import { usePhotoRotation } from '../hooks/usePhotoRotation'
+import { neighborIndices } from '../lib/hourlyPhoto'
 import type { AppConfig, Photo } from '../types'
 import type { CaptionMode } from '../types'
 
@@ -43,14 +44,7 @@ function HomeInner({ app, photos }: { app: AppConfig; photos: Photo[] }) {
   const now = useHourlyTick()
   const [mode, setMode] = useState<CaptionMode>('best_friend')
   const { parts, invalid } = useCountdown(app.birthday, app.timezone)
-
-  const selection = useMemo(() => {
-    try {
-      return selectHourlyPhoto(photos, app.timezone, now)
-    } catch {
-      return null
-    }
-  }, [photos, app.timezone, now])
+  const { selection, rotateToNext } = usePhotoRotation(photos, app.timezone, now)
 
   if (!selection) {
     return (
@@ -68,7 +62,7 @@ function HomeInner({ app, photos }: { app: AppConfig; photos: Photo[] }) {
   return (
     <main>
       <Countdown title={app.title} subtitle={app.subtitle} parts={parts} invalid={invalid} />
-      <PhotoHero src={current.file} alt={current.summary} preloadSrc={preloadSrc} />
+      <PhotoHero src={current.file} alt={current.summary} preloadSrc={preloadSrc} onRotate={rotateToNext} />
       <CaptionSection key={current.id} photoId={current.id} mode={mode} onModeChange={setMode} />
     </main>
   )

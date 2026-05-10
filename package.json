@@ -8,12 +8,16 @@
     "build": "tsc -b && vite build",
     "typecheck:api": "tsc -p tsconfig.api.json --noEmit",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate:photos": "tsx scripts/generate-photo-metadata.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "formidable": "^3.5.4",
+    "image-size": "^2.0.2",
     "luxon": "^3.7.2",
+    "mime-types": "^3.0.2",
+    "ollama": "^0.6.3",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-router-dom": "^7.15.0"
@@ -31,6 +35,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.5.0",
+    "tsx": "^4.21.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
     "vite": "^8.0.10"

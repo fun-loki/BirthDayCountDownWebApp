@@ -70,6 +70,46 @@ Edit `public/data/app-config.json`:
 
 **Hourly rotation:** the active photo is chosen deterministically from `displayOrder` and the current wall-clock hour in `app-config.timezone` (same logic in `src/lib/hourlyPhoto.ts`).
 
+**Manual rotation:** click the rotate button (floating button on the photo's right edge) to manually advance to the next photo. The hourly timer resets after manual rotation, so the next automatic change occurs one hour after the manual action. The button is keyboard accessible and includes a focus state for visibility.
+
+## Local photo metadata generation
+
+Use the local Ollama model to generate `public/data/photos.json` from the image files in `public/photos/`.
+
+Prerequisites:
+
+- Node.js installed.
+- Ollama installed locally.
+- `gemma3:4b` pulled locally with Ollama.
+
+Setup:
+
+```bash
+npm install
+ollama pull gemma3:4b
+```
+
+Place photos in `public/photos/` using one of the supported formats:
+
+- `.jpg`
+- `.jpeg`
+- `.png`
+- `.webp`
+
+Generate metadata:
+
+```bash
+npm run generate:photos
+```
+
+This writes a metadata array to `public/data/photos.json`. Each item includes `id`, `file`, `summary`, `visible_details`, `mood`, `setting`, `tags`, `confidence_notes`, and `displayOrder`.
+
+Troubleshooting:
+
+- If no images are found, verify `public/photos/` contains supported files.
+- If Ollama fails, ensure `ollama` is installed and the `gemma3:4b` model is available locally.
+- If JSON parsing fails, rerun the script. The script retries once automatically and saves each successful result incrementally.
+
 ## Internal admin (`/admin`)
 
 No authentication (keep the URL private). You can:
@@ -100,6 +140,7 @@ Serverless functions live in `/api`; static assets and JSON are served from `dis
 | `npm run preview`       | Preview the production build |
 | `npm run lint`          | ESLint                       |
 | `npm run typecheck:api` | Typecheck `api/` only        |
+| `npm run generate:photos` | Generate photo metadata from local Ollama |
 
 
 ## Project layout
