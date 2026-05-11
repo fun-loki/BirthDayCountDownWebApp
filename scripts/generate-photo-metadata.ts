@@ -153,7 +153,11 @@ async function writeJsonFile(filePath: string, data: unknown): Promise<void> {
 }
 
 async function discoverImages(directory: string): Promise<string[]> {
-  const entries = await fs.readdir(directory, { withFileTypes: true })
+  const entries = (await fs.readdir(directory, { withFileTypes: true })) as Array<{
+    isFile(): boolean
+    name: string
+  }>
+
   return entries
     .filter((entry) => entry.isFile() && isSupportedImage(entry.name))
     .map((entry) => entry.name)
@@ -162,7 +166,7 @@ async function discoverImages(directory: string): Promise<string[]> {
 
 async function getImageBase64(filePath: string): Promise<string> {
   const buffer = await fs.readFile(filePath)
-  imageSize(buffer) // validate image content
+  imageSize(buffer)
   return buffer.toString('base64')
 }
 
@@ -187,10 +191,30 @@ async function analyzeImage(ollamaClient: typeof ollama, fileName: string, image
 
   for (let attempt = 1; attempt <= MAX_RETRIES + 1; attempt += 1) {
     if (attempt > 1) {
-      console.log(`Retrying JSON parse for ${fileName} (attempt ${attempt})`)
+      console.log(`⚠ Retrying ${fileName} (attempt ${attempt}/${MAX_RETRIES + 1})`)
     }
 
+    const requestStart = Date.now()
+    let waitTimer: ReturnType<typeof setInterval> | undefined
+    let waitSeconds = 0
+    const spinnerChars = ['|', '/', '-', '\\']
+    let spinnerIndex = 0
+    let spinnerActive = false
+
     try {
+      console.log('→ Sending request to Ollama...')
+      process.stdout.write('Waiting for Ollama response... 0s |')
+      spinnerActive = true
+
+      waitTimer = setInterval(() => {
+        waitSeconds += 1
+        spinnerIndex = (spinnerIndex + 1) % spinnerChars.length
+        process.stdout.write(`\rWaiting for Ollama response... ${waitSeconds}s ${spinnerChars[spinnerIndex]}`)
+        if (waitSeconds % 5 === 0) {
+          process.stdout.write(' ')
+        }
+      }, 1000)
+
       const response = await ollamaClient.chat({
         model: MODEL_NAME,
         messages: [{ role: 'user', content: prompt, images: [imageBase64] }],
@@ -198,14 +222,32 @@ async function analyzeImage(ollamaClient: typeof ollama, fileName: string, image
         stream: false,
       })
 
+      if (waitTimer) {
+        clearInterval(waitTimer)
+      }
+      if (spinnerActive) {
+        process.stdout.write('\r' + ' '.repeat(80) + '\r')
+      }
+
+      const aiElapsed = (Date.now() - requestStart) / 1000
       const rawContent = response.message?.content ?? ''
       if (!rawContent.trim()) {
         throw new Error('Empty response from Ollama')
       }
 
-      return await parseMetadataResponse(rawContent)
+      console.log(`✓ AI response received (${aiElapsed.toFixed(1)}s)`)
+      console.log('→ Parsing JSON...')
+      const metadata = await parseMetadataResponse(rawContent)
+      console.log('✓ Metadata parsed successfully')
+      return metadata
     } catch (error) {
+      if (waitTimer) {
+        clearInterval(waitTimer)
+      }
+
       lastError = error instanceof Error ? error : new Error(String(error))
+      console.log(`⚠ ${lastError.message}`)
+
       if (attempt > MAX_RETRIES) {
         throw lastError
       }
@@ -215,62 +257,129 @@ async function analyzeImage(ollamaClient: typeof ollama, fileName: string, image
   throw lastError ?? new Error('Unknown Ollama error')
 }
 
+function formatDuration(ms: number): string {
+  const seconds = Math.round(ms / 1000)
+  const minutes = Math.floor(seconds / 60)
+  const remainingSeconds = seconds % 60
+  return minutes > 0 ? `${minutes}m ${String(remainingSeconds).padStart(2, '0')}s` : `${remainingSeconds}s`
+}
+
+async function assertDirectoryExists(directory: string): Promise<void> {
+  try {
+    const stats = await fs.stat(directory)
+    if (!stats.isDirectory()) {
+      throw new Error(`${directory} is not a directory`)
+    }
+  } catch {
+    throw new Error(`Photos folder not found: ${directory}`)
+  }
+}
+
+async function verifyOllamaConnection(client: typeof ollama): Promise<void> {
+  console.log('Checking Ollama connection...')
+  const start = Date.now()
+  try {
+    const response = await client.chat({
+      model: MODEL_NAME,
+      messages: [{ role: 'user', content: 'ping' }],
+      stream: false,
+    })
+
+    if (!response || !response.message) {
+      throw new Error('Invalid Ollama connection response')
+    }
+
+    console.log(`✓ Ollama connection successful (${formatDuration(Date.now() - start)})`)
+    console.log(`✓ Using model: ${MODEL_NAME}`)
+  } catch (error) {
+    throw new Error(`Ollama connectivity check failed: ${error instanceof Error ? error.message : String(error)}`)
+  }
+}
+
 async function main(): Promise<void> {
-  console.log('Starting photo metadata generation')
+  const startTime = Date.now()
+  console.log('================================')
+  console.log('Photo Metadata Generation Starting')
+  console.log('================================')
   console.log(`Source photos: ${PHOTOS_DIR}`)
   console.log(`Output file: ${OUTPUT_FILE}`)
 
   await fs.mkdir(OUTPUT_DIR, { recursive: true })
+  await assertDirectoryExists(PHOTOS_DIR)
 
   const discoveredNames = await discoverImages(PHOTOS_DIR)
-  console.log(`Discovered ${discoveredNames.length} supported image(s)`)
+  console.log(`✓ Found ${discoveredNames.length} supported image(s)`)
 
   if (discoveredNames.length === 0) {
     console.log('No supported images found. Supported extensions:', [...SUPPORTED_EXTENSIONS].join(', '))
     return
   }
 
+  await verifyOllamaConnection(ollama)
+
   const existingItems = await readJsonFile<PhotoMetadata[]>(OUTPUT_FILE, [])
   const processedFiles = new Set(existingItems.map((item) => item.file))
   const items: PhotoMetadata[] = [...existingItems]
 
-  const client = ollama
+  let successfulCount = 0
+  let failedCount = 0
+
+  const total = discoveredNames.length
 
   for (const [index, fileName] of discoveredNames.entries()) {
-    const displayOrder = index + 1
+    const current = index + 1
+    const percent = Math.round((current / total) * 100)
     const filePath = getOutputFilePath(fileName)
+    const absolutePath = path.join(PHOTOS_DIR, fileName)
 
     if (processedFiles.has(filePath)) {
-      console.log(`Skipping already processed image: ${fileName}`)
+      console.log(`Skipping already processed image: ${fileName} [${current}/${total}] (${percent}%)`)
       continue
     }
 
-    console.log(`Processing ${fileName} (${displayOrder}/${discoveredNames.length})`)
-    const absolutePath = path.join(PHOTOS_DIR, fileName)
+    console.log(`\n[${current}/${total}] (${percent}%) Processing: ${fileName}`)
+    const imageStart = Date.now()
 
     try {
+      console.log('→ Reading image...')
       const imageBase64 = await getImageBase64(absolutePath)
-      const metadata = await analyzeImage(client, fileName, imageBase64)
+
+      console.log('→ Converting to base64...')
+      const metadata = await analyzeImage(ollama, fileName, imageBase64)
 
       const item: PhotoMetadata = {
         ...metadata,
         id: generatePhotoId(items.length),
         file: filePath,
-        displayOrder,
+        displayOrder: current,
       }
 
+      console.log('→ Saving photos.json...')
       items.push(item)
       await writeJsonFile(OUTPUT_FILE, items)
-      console.log(`Saved metadata for ${fileName}`)
+      console.log('✓ Saved successfully')
+      console.log(`✓ Completed ${fileName} in ${formatDuration(Date.now() - imageStart)}`)
+      successfulCount += 1
     } catch (error) {
-      console.error(`Failed to process ${fileName}:`, error instanceof Error ? error.message : String(error))
+      failedCount += 1
+      console.error(`✗ Failed processing ${fileName}`)
+      console.error(`Reason: ${error instanceof Error ? error.message : String(error)}`)
+      console.error('Continuing with next image...')
     }
   }
 
-  console.log(`Completed metadata generation. Final item count: ${items.length}`)
+  console.log('\n================================')
+  console.log('Metadata Generation Complete')
+  console.log('================================')
+  console.log(`Processed: ${total}`)
+  console.log(`Successful: ${successfulCount}`)
+  console.log(`Failed: ${failedCount}`)
+  console.log(`Output: ${OUTPUT_FILE}`)
+  console.log(`Total Time: ${formatDuration(Date.now() - startTime)}`)
 }
 
 main().catch((error) => {
-  console.error('Photo metadata generation failed:', error instanceof Error ? error.message : String(error))
+  console.error('Photo metadata generation failed:')
+  console.error(error instanceof Error ? error.message : String(error))
   process.exit(1)
 })

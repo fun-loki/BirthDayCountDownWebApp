@@ -4,38 +4,38 @@
     "file": "/photos/photo-001.jpg",
     "photo_vibe": [
       "chill",
-      "comfort",
-      "genuine",
-      "relaxed",
-      "vulnerable"
+      "comfortable",
+      "hot",
+      "sexy"
     ],
     "personality_impression": [
       "approachable",
       "kind",
-      "thoughtful",
-      "real",
-      "easygoing"
+      "warm",
+      "easygoing",
+      "bold",
+      "model face"
     ],
     "caption_angles": [
       "just being me",
-      "a little bit of sunshine",
-      "feeling good",
-      "this is my happy place",
-      "simple joys"
+      "small moments",
+      "happy days",
+      "life is good"
     ],
     "natural_topics": [
       "connection",
-      "trust",
-      "acceptance",
-      "self-care",
-      "moments"
+      "simplicity",
+      "joy",
+      "sharing",
+      "being present",
+      "hot looks"
     ],
     "avoid_topics": [
       "nostalgia",
       "introspection",
       "contemplation",
-      "deep meaning",
-      "existential"
+      "serenity",
+      "reflection"
     ],
     "displayOrder": 1
   }
