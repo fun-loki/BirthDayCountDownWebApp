@@ -1,5 +1,5 @@
 import { SHARED_SYSTEM_PROMPT, buildUserPrompt, limitWords } from './prompts.js'
-import type { ModeConfigEntry, Photo } from '../types.js'
+import type { ModeConfigEntry, Photo, CaptionMode } from '../types.js'
 import { getRecentCaptions, pushCaption } from '../captionHistory.js'
 
 type ChatMessage =
@@ -48,7 +48,7 @@ async function postXaiChat(opts: {
 
 export async function generateCaptionText(opts: {
   photo: Photo
-  mode: string
+  mode: CaptionMode
   entry: ModeConfigEntry
   xaiKey: string
 }): Promise<ChatResponse> {

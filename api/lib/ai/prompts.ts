@@ -1,4 +1,5 @@
 import type { Photo } from '../types.js'
+import type { CaptionMode } from '../types.js'
 import { getModeConfig } from '../modeRegistry.js'
 
 export const SHARED_SYSTEM_PROMPT = `You write short Instagram/WhatsApp-style captions for a birthday countdown site.
@@ -10,14 +11,16 @@ Rules:
 - Feel like real people talking - friends, partners, family.
 - Avoid poetic language, Tumblr quotes, or philosophical writing.
 - Do not repeat or closely paraphrase any line listed under "Avoid repeating".
-- Output ONLY the caption text, no quotes, no hashtags.`
+- Output ONLY the caption text, no quotes, no hashtags.
+
+IMPORTANT: Think like an Indian person texting casually. Write Hindi responses in English letters. Use natural texting language like "acha", "itna", "kya hi", "sach bolu", "matlab", "kasam se", "waise". Avoid formal Hindi or Urdu shayari. Feel like Instagram comments, WhatsApp chats, close-friend roasting.`
 
 export function buildUserPrompt(
   photo: Photo,
-  mode: string,
+  mode: CaptionMode,
   recentCaptions: string[],
 ): string {
-  const modeConfig = getModeConfig(mode as any)
+  const modeConfig = getModeConfig(mode)
 
   const avoid =
     recentCaptions.length > 0
@@ -29,11 +32,11 @@ export function buildUserPrompt(
     : ''
 
   const languageRules = modeConfig.allowedLanguageMix.hinglish
-    ? 'Light Hinglish allowed when natural.'
+    ? 'Light Hinglish allowed when natural. Prefer Hindi thinking in English letters (acha, itna, kya hi, sach bolu, matlab, kasam se, waise).'
     : 'Stick to English, avoid Hinglish.'
 
   const avoidWords = modeConfig.avoidWords.length > 0
-    ? `Avoid these words: ${modeConfig.avoidWords.join(', ')}`
+    ? `NEVER use these words: ${modeConfig.avoidWords.join(', ')}`
     : ''
 
   return `Mode personality: ${modeConfig.id}
@@ -53,7 +56,7 @@ Caption angles: ${photo.caption_angles.join(', ')}
 Natural topics: ${photo.natural_topics.join(', ')}
 ${avoidTopics}
 
-Focus on natural Indian conversational tone - sound human, sound Indian, feel naturally typed. Avoid AI poetry, Tumblr language, dramatic philosophy, fake Hinglish, forced slang.
+Focus on natural Indian conversational tone - sound human, sound Indian, feel naturally typed. Avoid AI poetry, Tumblr language, dramatic philosophy, fake Hinglish, forced slang. Write like Instagram comments, WhatsApp chats, close-friend roasting.
 
 Avoid repeating:
 ${avoid}`
