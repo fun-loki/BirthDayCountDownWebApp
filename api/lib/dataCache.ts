@@ -7,10 +7,10 @@ let photos: Photo[] | null = null
 let modeConfig: ModeConfigFile | null = null
 let loggedWarm = false
 
-// Migration function to convert old photo format to new emotional format
+// Migration function to convert old photo format to new natural format
 function migratePhotoFormat(oldPhoto: Record<string, unknown>): Photo {
   // If already in new format, return as-is
-  if (oldPhoto.visual_style && oldPhoto.emotional_energy) {
+  if (oldPhoto.photo_vibe && oldPhoto.personality_impression) {
     return oldPhoto as Photo
   }
 
@@ -18,12 +18,11 @@ function migratePhotoFormat(oldPhoto: Record<string, unknown>): Photo {
   return {
     id: String(oldPhoto.id || ''),
     file: String(oldPhoto.file || ''),
-    visual_style: Array.isArray(oldPhoto.visible_details) ? oldPhoto.visible_details.map(String) : [],
-    emotional_energy: [String(oldPhoto.mood || 'warm')],
-    caption_inspiration: [String(oldPhoto.summary || 'comforting presence').split('.')[0]],
-    relationship_vibe: ['close connection'],
-    aesthetic_keywords: Array.isArray(oldPhoto.tags) ? oldPhoto.tags.map(String) : [],
-    avoid_caption_topics: ['clothing', 'sweater', 'shirt'],
+    photo_vibe: Array.isArray(oldPhoto.visual_style) ? oldPhoto.visual_style.map(String) : ['calm', 'cozy'],
+    personality_impression: Array.isArray(oldPhoto.emotional_energy) ? oldPhoto.emotional_energy.map(String) : ['soft spoken energy'],
+    caption_angles: Array.isArray(oldPhoto.caption_inspiration) ? oldPhoto.caption_inspiration.map(String) : ['someone easy to miss'],
+    natural_topics: Array.isArray(oldPhoto.aesthetic_keywords) ? oldPhoto.aesthetic_keywords.map(String) : ['smile', 'comfort'],
+    avoid_topics: Array.isArray(oldPhoto.avoid_caption_topics) ? oldPhoto.avoid_caption_topics.map(String) : ['clothes', 'fashion'],
     displayOrder: Number(oldPhoto.displayOrder) || 0,
   }
 }

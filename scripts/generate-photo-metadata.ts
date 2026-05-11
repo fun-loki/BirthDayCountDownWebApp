@@ -16,12 +16,11 @@ const MAX_RETRIES = 1
 export type PhotoMetadata = {
   id: string
   file: string
-  visual_style: string[]
-  emotional_energy: string[]
-  caption_inspiration: string[]
-  relationship_vibe: string[]
-  aesthetic_keywords: string[]
-  avoid_caption_topics: string[]
+  photo_vibe: string[]
+  personality_impression: string[]
+  caption_angles: string[]
+  natural_topics: string[]
+  avoid_topics: string[]
   displayOrder: number
 }
 
@@ -38,50 +37,54 @@ function getOutputFilePath(fileName: string): string {
 }
 
 function buildPrompt(): string {
-  return `Analyze this image for AI-generated emotional caption creation.
+  return `Analyze this image for generating natural Indian-style emotional captions.
 
-Do NOT focus on clothing, objects, or literal scene description unless emotionally important.
+The goal is NOT to describe the image literally.
 
 The goal is to help generate:
-- romantic captions
 - playful captions
-- emotionally warm captions
-- memory-like captions
+- emotional captions
+- teasing captions
+- warm captions
+- relatable captions
 
 Focus on:
-- emotional energy
-- perceived personality
-- emotional atmosphere
-- relationship vibe
-- aesthetic feeling
-- emotional interpretation
+- personality vibe
+- casual emotional feeling
+- relatable behavior
+- comfort energy
+- playful energy
+- natural human impressions
 
-Avoid over-describing:
-- clothes
-- colors
-- literal objects
+Avoid:
+- poetic language
+- abstract emotions
+- philosophical descriptions
 - fashion details
+- photography terms
+- overdramatic emotional analysis
 
 Return STRICT JSON only.
 
 Schema:
 {
-  "visual_style": string[],
-  "emotional_energy": string[],
-  "caption_inspiration": string[],
-  "relationship_vibe": string[],
-  "aesthetic_keywords": string[],
-  "avoid_caption_topics": string[]
+  "photo_vibe": string[],
+  "personality_impression": string[],
+  "caption_angles": string[],
+  "natural_topics": string[],
+  "avoid_topics": string[]
 }
 
 Rules:
+- lowercase only
 - concise phrases only
-- lowercase
-- emotionally expressive
+- relatable human observations
+- simple language
+- no poetic wording
 - no markdown
 - no explanations
-- avoid generic outputs
-- avoid repeating physical objects`
+- avoid AI sounding words
+- avoid western Tumblr tone`
 }
 
 function cleanJsonString(text: string): string {
@@ -102,40 +105,35 @@ function validateMetadata(value: unknown): PhotoMetadata {
 
   const metadata = value as Record<string, unknown>
 
-  const visual_style = Array.isArray(metadata.visual_style)
-    ? metadata.visual_style.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
+  const photo_vibe = Array.isArray(metadata.photo_vibe)
+    ? metadata.photo_vibe.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
     : []
-  const emotional_energy = Array.isArray(metadata.emotional_energy)
-    ? metadata.emotional_energy.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
+  const personality_impression = Array.isArray(metadata.personality_impression)
+    ? metadata.personality_impression.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
     : []
-  const caption_inspiration = Array.isArray(metadata.caption_inspiration)
-    ? metadata.caption_inspiration.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
+  const caption_angles = Array.isArray(metadata.caption_angles)
+    ? metadata.caption_angles.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
     : []
-  const relationship_vibe = Array.isArray(metadata.relationship_vibe)
-    ? metadata.relationship_vibe.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
+  const natural_topics = Array.isArray(metadata.natural_topics)
+    ? metadata.natural_topics.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
     : []
-  const aesthetic_keywords = Array.isArray(metadata.aesthetic_keywords)
-    ? metadata.aesthetic_keywords.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
-    : []
-  const avoid_caption_topics = Array.isArray(metadata.avoid_caption_topics)
-    ? metadata.avoid_caption_topics.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
+  const avoid_topics = Array.isArray(metadata.avoid_topics)
+    ? metadata.avoid_topics.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
     : []
 
-  if (visual_style.length === 0) throw new Error('visual_style must be a non-empty array')
-  if (emotional_energy.length === 0) throw new Error('emotional_energy must be a non-empty array')
-  if (caption_inspiration.length === 0) throw new Error('caption_inspiration must be a non-empty array')
-  if (relationship_vibe.length === 0) throw new Error('relationship_vibe must be a non-empty array')
-  if (aesthetic_keywords.length === 0) throw new Error('aesthetic_keywords must be a non-empty array')
+  if (photo_vibe.length === 0) throw new Error('photo_vibe must be a non-empty array')
+  if (personality_impression.length === 0) throw new Error('personality_impression must be a non-empty array')
+  if (caption_angles.length === 0) throw new Error('caption_angles must be a non-empty array')
+  if (natural_topics.length === 0) throw new Error('natural_topics must be a non-empty array')
 
   return {
     id: '',
     file: '',
-    visual_style,
-    emotional_energy,
-    caption_inspiration,
-    relationship_vibe,
-    aesthetic_keywords,
-    avoid_caption_topics,
+    photo_vibe,
+    personality_impression,
+    caption_angles,
+    natural_topics,
+    avoid_topics,
     displayOrder: 0,
   }
 }

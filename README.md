@@ -57,8 +57,8 @@ Use the host/port that `vercel dev` prints (not necessarily `3000`).
 
 Edit `public/data/app-config.json`:
 
-- `birthday` — local date/time in the `timezone` zone (ISO-like string, e.g. `2026-12-31T18:30:00`).
-- `timezone` — IANA name (e.g. `America/New_York`).
+- `birthday` — local date/time in the `timezone` zone (ISO-like string, e.g. `2026-05-26T00:00:00+05:30`).
+- `timezone` — IANA name (e.g. `Asia/Kolkata`).
 
 ## Photos and captions
 

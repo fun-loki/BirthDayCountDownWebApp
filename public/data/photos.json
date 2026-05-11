@@ -2,41 +2,40 @@
   {
     "id": "photo-001",
     "file": "/photos/photo-001.jpg",
-    "visual_style": [
-      "ethereal",
-      "dreamy",
-      "soft focus",
-      "muted tones"
+    "photo_vibe": [
+      "comfortable",
+      "chill",
+      "genuine",
+      "relaxed",
+      "vulnerable"
     ],
-    "emotional_energy": [
-      "vulnerability",
-      "longing",
-      "serenity",
-      "introspection"
+    "personality_impression": [
+      "approachable",
+      "kind",
+      "easygoing",
+      "thoughtful",
+      "warm"
     ],
-    "caption_inspiration": [
-      "lost in thought",
-      "a quiet moment",
-      "searching for answers",
-      "unspoken connection"
+    "caption_angles": [
+      "just being me",
+      "a little bit of sunshine",
+      "feeling good today",
+      "my happy place",
+      "sharing a moment"
     ],
-    "relationship_vibe": [
-      "gentle",
-      "sensitive",
-      "reflective",
-      "private"
+    "natural_topics": [
+      "connection",
+      "self-care",
+      "simple joys",
+      "real life",
+      "being present"
     ],
-    "aesthetic_keywords": [
+    "avoid_topics": [
       "nostalgia",
-      "melancholy",
-      "atmospheric",
-      "fragile"
-    ],
-    "avoid_caption_topics": [
-      "happiness",
-      "joy",
-      "excitement",
-      "adventure"
+      "introspection",
+      "existential",
+      "beauty",
+      "dreamy"
     ],
     "displayOrder": 1
   }
