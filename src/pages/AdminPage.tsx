@@ -1,6 +1,5 @@
-import { useCallback, useMemo, useState, type ChangeEvent } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { postAnalyzePhotos } from '../services/analyzeApi'
 import type { AnalyzePhotoItem } from '../types'
 import styles from './AdminPage.module.css'
 
@@ -26,36 +25,11 @@ function downloadJson(filename: string, data: unknown) {
 }
 
 export function AdminPage() {
-  const [files, setFiles] = useState<File[]>([])
   const [items, setItems] = useState<AnalyzePhotoItem[]>([])
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [error] = useState<string | null>(null)
   const [dragIndex, setDragIndex] = useState<number | null>(null)
 
   const preview = useMemo(() => JSON.stringify(items, null, 2), [items])
-
-  const onPick = (e: ChangeEvent<HTMLInputElement>) => {
-    const list = e.target.files ? Array.from(e.target.files) : []
-    setFiles(list)
-    setError(null)
-  }
-
-  const runAnalyze = async () => {
-    if (files.length === 0) {
-      setError('Choose one or more images first.')
-      return
-    }
-    setBusy(true)
-    setError(null)
-    try {
-      const next = await postAnalyzePhotos(files)
-      setItems(next)
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Analysis failed')
-    } finally {
-      setBusy(false)
-    }
-  }
 
   const updateRow = useCallback((index: number, patch: Partial<AnalyzePhotoItem>) => {
     setItems((prev) => {
@@ -109,26 +83,11 @@ export function AdminPage() {
       </div>
 
       <p className={styles.hint}>
-        Internal tool: upload images, run vision analysis, tweak fields, reorder, then download{' '}
-        <code className={styles.mono}>photos.json</code>. Copy analyzed images into{' '}
-        <code className={styles.mono}>public/photos/</code> using the filenames referenced in the JSON,
-        then deploy.
+        Internal tool: review and edit photo metadata, then download <code className={styles.mono}>photos.json</code>.
+        Use the local Ollama script (`npm run generate:photos`) to generate metadata from images in <code className={styles.mono}>public/photos/</code>.
       </p>
 
       <div className={styles.toolbar}>
-        <label className={styles.fileLabel}>
-          <input
-            type="file"
-            className={styles.fileInput}
-            accept="image/*"
-            multiple
-            onChange={onPick}
-          />
-          {files.length ? `${files.length} file(s) selected` : 'Choose images'}
-        </label>
-        <button type="button" className={styles.btn} disabled={busy} onClick={() => void runAnalyze()}>
-          {busy ? 'Analyzing…' : 'Analyze with AI'}
-        </button>
         <button
           type="button"
           className={styles.btn}

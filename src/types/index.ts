@@ -32,7 +32,7 @@ export type Photo = {
 }
 
 export type ModeConfigEntry = {
-  provider: 'openai' | 'xai'
+  provider: 'xai'
   model: string
   temperature: number
   max_tokens: number
@@ -56,7 +56,7 @@ export type CaptionRequestBody = {
 
 export type CaptionResponseBody = {
   caption: string
-  provider: string
+  provider: 'xai'
   model: string
   cached: boolean
   generatedAt: string

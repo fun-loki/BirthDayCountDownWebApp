@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto'
 import { CAPTION_MODES, type CaptionRequestBody, type CaptionMode } from './lib/types.js'
 import { getModeConfig, getPhotos } from './lib/dataCache.js'
 import { cacheKeyForCaption, captionCacheGet, captionCacheSet } from './lib/ttlCache.js'
-import { generateCaptionText, routeProviderForMode } from './lib/ai/providers.js'
+import { generateCaptionText } from './lib/ai/providers.js'
 import { apiLog } from './lib/log.js'
 
 function isCaptionMode(m: string): m is CaptionMode {
@@ -33,13 +33,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return
   }
 
-  const openaiKey = process.env.OPENAI_API_KEY ?? ''
   const xaiKey = process.env.XAI_API_KEY ?? ''
-  if (routeProviderForMode(body.mode) === 'openai' && !openaiKey) {
-    res.status(500).json({ error: 'OPENAI_API_KEY is not configured' })
-    return
-  }
-  if (routeProviderForMode(body.mode) === 'xai' && !xaiKey) {
+  if (!xaiKey) {
     res.status(500).json({ error: 'XAI_API_KEY is not configured' })
     return
   }
@@ -66,10 +61,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       photoId: body.photoId,
       mode: body.mode,
       ms: Date.now() - started,
+      provider: 'xai',
     })
     res.status(200).json({
       caption: cachedText,
-      provider: routeProviderForMode(body.mode),
+      provider: 'xai',
       model: entry.model,
       cached: true,
       generatedAt: new Date().toISOString(),
@@ -81,7 +77,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     reqId,
     photoId: body.photoId,
     mode: body.mode,
-    provider: routeProviderForMode(body.mode),
+    provider: 'xai',
   })
 
   try {
@@ -89,7 +85,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       photo,
       mode: body.mode,
       entry,
-      openaiKey,
       xaiKey,
     })
     captionCacheSet(cacheKey, text)

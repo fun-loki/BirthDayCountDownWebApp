@@ -1,19 +1,18 @@
 # Birthday countdown
 
-A small, mobile-first birthday countdown site: live timer, hourly photo rotation, and AI captions with several “voices.” The UI is a Vite + React SPA; captions and admin vision run on Vercel serverless routes under `/api`.
+A small, mobile-first birthday countdown site: live timer, hourly photo rotation, and AI captions with several “voices.” The UI is a Vite + React SPA; captions run on Vercel serverless routes under `/api`.
 
 ## Architecture
 
 - **Frontend:** React, Vite, TypeScript, CSS Modules (`src/`).
 - **Static data:** JSON in `public/data/` plus images in `public/photos/` (no database).
-- **API:** `api/caption.ts` and `api/analyze-photos.ts` (Node serverless on Vercel).
-- **AI:** OpenAI for most caption modes and for vision analysis in admin; xAI (Grok) for boyfriend, husband, and flirty caption modes. Routing is defined in code (`api/lib/ai/providers.ts`).
+- **API:** `api/caption.ts` (Node serverless on Vercel).
+- **AI:** xAI (Grok) for all caption modes. Local Ollama is used only for photo metadata generation via `scripts/generate-photo-metadata.ts`.
 - **Caching:** In-memory caption cache (10-minute buckets) and last-five caption history per photo + mode, both per serverless instance (best-effort on cold starts).
 
 ```
 Browser → /data/*.json, /photos/*
 Browser → POST /api/caption (JSON)
-Admin   → POST /api/analyze-photos (multipart images)
 ```
 
 ## Setup
@@ -24,8 +23,7 @@ Admin   → POST /api/analyze-photos (multipart images)
   ```
 2. **Environment**
   Copy `.env.example` to `.env.local` (or configure vars in the Vercel dashboard):
-  - `OPENAI_API_KEY` is required for admin vision analysis and for caption modes: dad, mom, brother, best_friend, enemy.
-  - `XAI_API_KEY` is required for caption modes: boyfriend, husband, flirty.
+  - `XAI_API_KEY` is required for runtime caption generation.
 
 ## Local development
 
@@ -112,20 +110,18 @@ Troubleshooting:
 
 ## Internal admin (`/admin`)
 
-No authentication (keep the URL private). You can:
+No authentication (keep the URL private). You can edit photo metadata and download `photos.json` for manual publishing.
 
-1. Upload one or more images.
-2. Run **Analyze with AI** (OpenAI vision) to draft metadata.
-3. Edit fields, drag rows to reorder (`displayOrder` updates automatically).
-4. Download `photos.json` and merge into `public/data/photos.json`.
-5. Copy image files into `public/photos/` to match the `file` paths in the JSON, then commit/deploy.
+1. Edit fields and drag rows to reorder (`displayOrder` updates automatically).
+2. Download `photos.json` and merge into `public/data/photos.json`.
+3. Copy image files into `public/photos/` to match the `file` paths in the JSON, then commit/deploy.
 
 The production server does not persist uploaded binaries; treat images as repo assets.
 
 ## Deployment (Vercel)
 
 1. Connect the Git repository to Vercel (framework: Vite, or use the included `vercel.json`).
-2. Set `OPENAI_API_KEY` and `XAI_API_KEY` in **Project → Settings → Environment Variables**.
+2. Set `XAI_API_KEY` in **Project → Settings → Environment Variables**.
 3. Deploy. Build command: `npm run build`; output: `dist`.
 
 Serverless functions live in `/api`; static assets and JSON are served from `dist/` (Vite copies `public/` into `dist/`). The API handlers read `public/data/*.json` in development and `dist/data/*.json` after build when deployed.
@@ -158,7 +154,6 @@ src/
   types/          # shared TS types
 api/
   caption.ts
-  analyze-photos.ts
   lib/            # cache, logging, AI helpers
 ```
 
