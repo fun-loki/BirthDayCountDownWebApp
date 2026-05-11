@@ -3,40 +3,40 @@
     "id": "photo-001",
     "file": "/photos/photo-001.jpg",
     "visual_style": [
-      "dreamy",
       "ethereal",
-      "soft",
-      "hazy"
+      "dreamy",
+      "soft focus",
+      "muted tones"
     ],
     "emotional_energy": [
-      "longing",
       "vulnerability",
-      "quiet contemplation",
-      "serenity"
+      "longing",
+      "serenity",
+      "introspection"
     ],
     "caption_inspiration": [
       "lost in thought",
-      "a silent promise",
-      "unspoken connection",
-      "golden hour memories"
+      "a quiet moment",
+      "searching for answers",
+      "unspoken connection"
     ],
     "relationship_vibe": [
-      "intimate",
-      "tender",
-      "deeply felt",
-      "shared soul"
+      "gentle",
+      "sensitive",
+      "reflective",
+      "private"
     ],
     "aesthetic_keywords": [
-      "luminescence",
-      "fragile",
+      "nostalgia",
       "melancholy",
-      "suspended"
+      "atmospheric",
+      "fragile"
     ],
     "avoid_caption_topics": [
       "happiness",
       "joy",
       "excitement",
-      "celebration"
+      "adventure"
     ],
     "displayOrder": 1
   }
