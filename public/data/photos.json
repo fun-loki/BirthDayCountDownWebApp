@@ -3,8 +3,8 @@
     "id": "photo-001",
     "file": "/photos/photo-001.jpg",
     "photo_vibe": [
-      "comfortable",
       "chill",
+      "comfort",
       "genuine",
       "relaxed",
       "vulnerable"
@@ -12,30 +12,30 @@
     "personality_impression": [
       "approachable",
       "kind",
-      "easygoing",
       "thoughtful",
-      "warm"
+      "real",
+      "easygoing"
     ],
     "caption_angles": [
       "just being me",
       "a little bit of sunshine",
-      "feeling good today",
-      "my happy place",
-      "sharing a moment"
+      "feeling good",
+      "this is my happy place",
+      "simple joys"
     ],
     "natural_topics": [
       "connection",
+      "trust",
+      "acceptance",
       "self-care",
-      "simple joys",
-      "real life",
-      "being present"
+      "moments"
     ],
     "avoid_topics": [
       "nostalgia",
       "introspection",
-      "existential",
-      "beauty",
-      "dreamy"
+      "contemplation",
+      "deep meaning",
+      "existential"
     ],
     "displayOrder": 1
   }

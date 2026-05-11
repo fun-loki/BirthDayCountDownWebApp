@@ -53,7 +53,7 @@ export async function generateCaptionText(opts: {
   xaiKey: string
 }): Promise<ChatResponse> {
   const recent = getRecentCaptions(opts.photo.id, opts.mode)
-  const user = buildUserPrompt(opts.photo, opts.entry.style_instructions, recent)
+  const user = buildUserPrompt(opts.photo, opts.mode, recent)
   const messages: ChatMessage[] = [
     { role: 'system', content: SHARED_SYSTEM_PROMPT },
     { role: 'user', content: user },

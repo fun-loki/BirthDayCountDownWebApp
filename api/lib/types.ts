@@ -7,6 +7,7 @@ export type CaptionMode =
   | 'husband'
   | 'flirty'
   | 'enemy'
+  | 'tapori'
 
 export const CAPTION_MODES: readonly CaptionMode[] = [
   'dad',
@@ -17,6 +18,7 @@ export const CAPTION_MODES: readonly CaptionMode[] = [
   'husband',
   'flirty',
   'enemy',
+  'tapori',
 ] as const
 
 export type Photo = {
@@ -39,6 +41,19 @@ export type ModeConfigEntry = {
 }
 
 export type ModeConfigFile = Record<CaptionMode, ModeConfigEntry>
+
+export type CaptionModeConfig = {
+  id: string
+  tone: string[]
+  speakingStyle: string[]
+  allowedLanguageMix: {
+    english: boolean
+    hinglish: boolean
+  }
+  humorStyle: string[]
+  avoidWords: string[]
+  examples: string[]
+}
 
 export type CaptionRequestBody = {
   photoId: string

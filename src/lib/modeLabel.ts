@@ -9,6 +9,7 @@ const LABELS: Record<CaptionMode, string> = {
   husband: 'Husband',
   flirty: 'Flirty',
   enemy: 'Frenemy',
+  tapori: 'Tapori',
 }
 
 export function modeLabel(mode: CaptionMode): string {

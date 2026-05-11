@@ -1,4 +1,5 @@
 import type { Photo } from '../types.js'
+import { getModeConfig } from '../modeRegistry.js'
 
 export const SHARED_SYSTEM_PROMPT = `You write short Instagram/WhatsApp-style captions for a birthday countdown site.
 Rules:
@@ -13,9 +14,11 @@ Rules:
 
 export function buildUserPrompt(
   photo: Photo,
-  styleInstructions: string,
+  mode: string,
   recentCaptions: string[],
 ): string {
+  const modeConfig = getModeConfig(mode as any)
+
   const avoid =
     recentCaptions.length > 0
       ? recentCaptions.map((c, i) => `${i + 1}. ${c}`).join('\n')
@@ -25,8 +28,23 @@ export function buildUserPrompt(
     ? `Additional topics to avoid: ${photo.avoid_topics.join(', ')}`
     : ''
 
-  return `Mode style:
-${styleInstructions}
+  const languageRules = modeConfig.allowedLanguageMix.hinglish
+    ? 'Light Hinglish allowed when natural.'
+    : 'Stick to English, avoid Hinglish.'
+
+  const avoidWords = modeConfig.avoidWords.length > 0
+    ? `Avoid these words: ${modeConfig.avoidWords.join(', ')}`
+    : ''
+
+  return `Mode personality: ${modeConfig.id}
+Tone: ${modeConfig.tone.join(', ')}
+Speaking style: ${modeConfig.speakingStyle.join(', ')}
+Humor style: ${modeConfig.humorStyle.join(', ')}
+${languageRules}
+${avoidWords}
+
+Examples of this mode's style:
+${modeConfig.examples.map((ex: string, i: number) => `${i + 1}. "${ex}"`).join('\n')}
 
 Photo personality guidance:
 Photo vibe: ${photo.photo_vibe.join(', ')}
@@ -35,7 +53,7 @@ Caption angles: ${photo.caption_angles.join(', ')}
 Natural topics: ${photo.natural_topics.join(', ')}
 ${avoidTopics}
 
-Focus on natural Indian conversational tone - casual, relatable, playful teasing, sometimes light Hinglish. Avoid poetic/abstract language.
+Focus on natural Indian conversational tone - sound human, sound Indian, feel naturally typed. Avoid AI poetry, Tumblr language, dramatic philosophy, fake Hinglish, forced slang.
 
 Avoid repeating:
 ${avoid}`
