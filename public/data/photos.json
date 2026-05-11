@@ -2,22 +2,42 @@
   {
     "id": "photo-001",
     "file": "/photos/photo-001.jpg",
-    "summary": "Young woman in a cozy sweater, inviting connection.",
-    "visible_details": [
-      "blue patterned sweater",
-      "smiling face",
-      "soft lighting"
+    "visual_style": [
+      "dreamy",
+      "ethereal",
+      "soft",
+      "hazy"
     ],
-    "mood": "hopeful",
-    "setting": "indoor, intimate",
-    "tags": [
-      "casual",
-      "warm",
-      "friendly",
-      "young",
-      "female"
+    "emotional_energy": [
+      "longing",
+      "vulnerability",
+      "quiet contemplation",
+      "serenity"
     ],
-    "confidence_notes": "",
+    "caption_inspiration": [
+      "lost in thought",
+      "a silent promise",
+      "unspoken connection",
+      "golden hour memories"
+    ],
+    "relationship_vibe": [
+      "intimate",
+      "tender",
+      "deeply felt",
+      "shared soul"
+    ],
+    "aesthetic_keywords": [
+      "luminescence",
+      "fragile",
+      "melancholy",
+      "suspended"
+    ],
+    "avoid_caption_topics": [
+      "happiness",
+      "joy",
+      "excitement",
+      "celebration"
+    ],
     "displayOrder": 1
   }
 ]

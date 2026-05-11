@@ -62,7 +62,7 @@ function HomeInner({ app, photos }: { app: AppConfig; photos: Photo[] }) {
   return (
     <main>
       <Countdown title={app.title} subtitle={app.subtitle} parts={parts} invalid={invalid} />
-      <PhotoHero src={current.file} alt={current.summary} preloadSrc={preloadSrc} onRotate={rotateToNext} />
+      <PhotoHero src={current.file} alt={current.emotional_energy.join(', ')} preloadSrc={preloadSrc} onRotate={rotateToNext} />
       <CaptionSection key={current.id} photoId={current.id} mode={mode} onModeChange={setMode} />
     </main>
   )

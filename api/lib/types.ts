@@ -22,12 +22,12 @@ export const CAPTION_MODES: readonly CaptionMode[] = [
 export type Photo = {
   id: string
   file: string
-  summary: string
-  visible_details: string[]
-  mood: string
-  setting: string
-  tags: string[]
-  confidence_notes: string
+  visual_style: string[]
+  emotional_energy: string[]
+  caption_inspiration: string[]
+  relationship_vibe: string[]
+  aesthetic_keywords: string[]
+  avoid_caption_topics: string[]
   displayOrder: number
 }
 

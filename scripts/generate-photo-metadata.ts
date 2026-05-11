@@ -16,12 +16,12 @@ const MAX_RETRIES = 1
 export type PhotoMetadata = {
   id: string
   file: string
-  summary: string
-  visible_details: string[]
-  mood: string
-  setting: string
-  tags: string[]
-  confidence_notes: string
+  visual_style: string[]
+  emotional_energy: string[]
+  caption_inspiration: string[]
+  relationship_vibe: string[]
+  aesthetic_keywords: string[]
+  avoid_caption_topics: string[]
   displayOrder: number
 }
 
@@ -38,28 +38,50 @@ function getOutputFilePath(fileName: string): string {
 }
 
 function buildPrompt(): string {
-  return `Analyze this image for a birthday countdown website.
+  return `Analyze this image for AI-generated emotional caption creation.
+
+Do NOT focus on clothing, objects, or literal scene description unless emotionally important.
+
+The goal is to help generate:
+- romantic captions
+- playful captions
+- emotionally warm captions
+- memory-like captions
+
+Focus on:
+- emotional energy
+- perceived personality
+- emotional atmosphere
+- relationship vibe
+- aesthetic feeling
+- emotional interpretation
+
+Avoid over-describing:
+- clothes
+- colors
+- literal objects
+- fashion details
 
 Return STRICT JSON only.
 
 Schema:
 {
-  "summary": string,
-  "visible_details": string[],
-  "mood": string,
-  "setting": string,
-  "tags": string[],
-  "confidence_notes": string
+  "visual_style": string[],
+  "emotional_energy": string[],
+  "caption_inspiration": string[],
+  "relationship_vibe": string[],
+  "aesthetic_keywords": string[],
+  "avoid_caption_topics": string[]
 }
 
 Rules:
-- summary under 20 words
-- concise visual details only
+- concise phrases only
+- lowercase
+- emotionally expressive
 - no markdown
 - no explanations
-- tags lowercase
-- romantic/emotional awareness
-- confidence_notes empty unless uncertainty exists`
+- avoid generic outputs
+- avoid repeating physical objects`
 }
 
 function cleanJsonString(text: string): string {
@@ -79,34 +101,41 @@ function validateMetadata(value: unknown): PhotoMetadata {
   }
 
   const metadata = value as Record<string, unknown>
-  const summary = String(metadata.summary ?? '').trim()
-  const mood = String(metadata.mood ?? '').trim()
-  const setting = String(metadata.setting ?? '').trim()
-  const confidence_notes = String(metadata.confidence_notes ?? '').trim()
 
-  if (!summary) throw new Error('Missing summary')
-  if (!mood) throw new Error('Missing mood')
-  if (!setting) throw new Error('Missing setting')
-
-  const details = Array.isArray(metadata.visible_details)
-    ? metadata.visible_details.map(String).map((item) => item.trim()).filter(Boolean)
+  const visual_style = Array.isArray(metadata.visual_style)
+    ? metadata.visual_style.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
     : []
-  const tags = Array.isArray(metadata.tags)
-    ? metadata.tags.map(String).map((tag) => tag.trim().toLowerCase()).filter(Boolean)
+  const emotional_energy = Array.isArray(metadata.emotional_energy)
+    ? metadata.emotional_energy.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
+    : []
+  const caption_inspiration = Array.isArray(metadata.caption_inspiration)
+    ? metadata.caption_inspiration.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
+    : []
+  const relationship_vibe = Array.isArray(metadata.relationship_vibe)
+    ? metadata.relationship_vibe.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
+    : []
+  const aesthetic_keywords = Array.isArray(metadata.aesthetic_keywords)
+    ? metadata.aesthetic_keywords.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
+    : []
+  const avoid_caption_topics = Array.isArray(metadata.avoid_caption_topics)
+    ? metadata.avoid_caption_topics.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
     : []
 
-  if (details.length === 0) throw new Error('visible_details must be a non-empty array')
-  if (tags.length === 0) throw new Error('tags must be a non-empty array')
+  if (visual_style.length === 0) throw new Error('visual_style must be a non-empty array')
+  if (emotional_energy.length === 0) throw new Error('emotional_energy must be a non-empty array')
+  if (caption_inspiration.length === 0) throw new Error('caption_inspiration must be a non-empty array')
+  if (relationship_vibe.length === 0) throw new Error('relationship_vibe must be a non-empty array')
+  if (aesthetic_keywords.length === 0) throw new Error('aesthetic_keywords must be a non-empty array')
 
   return {
     id: '',
     file: '',
-    summary,
-    visible_details: details,
-    mood,
-    setting,
-    tags,
-    confidence_notes,
+    visual_style,
+    emotional_energy,
+    caption_inspiration,
+    relationship_vibe,
+    aesthetic_keywords,
+    avoid_caption_topics,
     displayOrder: 0,
   }
 }
@@ -147,7 +176,9 @@ async function parseMetadataResponse(content: string): Promise<PhotoMetadata> {
     try {
       return validateMetadata(JSON.parse(fallbackText))
     } catch (secondError) {
-      throw new Error(`JSON parse failed: ${secondError instanceof Error ? secondError.message : String(secondError)}; original: ${firstError instanceof Error ? firstError.message : String(firstError)}`)
+      const error = new Error(`JSON parse failed: ${secondError instanceof Error ? secondError.message : String(secondError)}; original: ${firstError instanceof Error ? firstError.message : String(firstError)}`)
+      error.cause = secondError
+      throw error
     }
   }
 }
