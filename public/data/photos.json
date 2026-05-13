@@ -2,40 +2,13 @@
   {
     "id": "photo-001",
     "file": "/photos/photo-001.jpg",
-    "photo_vibe": [
-      "chill",
-      "comfortable",
-      "hot",
-      "sexy"
-    ],
-    "personality_impression": [
-      "approachable",
-      "kind",
-      "warm",
-      "easygoing",
-      "bold",
-      "model face"
-    ],
-    "caption_angles": [
-      "just being me",
-      "small moments",
-      "happy days",
-      "life is good"
-    ],
-    "natural_topics": [
-      "connection",
-      "simplicity",
-      "joy",
-      "sharing",
-      "being present",
-      "hot looks"
-    ],
-    "avoid_topics": [
-      "nostalgia",
-      "introspection",
-      "contemplation",
-      "serenity",
-      "reflection"
+    "visuals": [
+      "head tilt",
+      "slightly smiling",
+      "close-up selfie",
+      "soft lighting",
+      "casual vibe",
+      "textured sweater"
     ],
     "displayOrder": 1
   }

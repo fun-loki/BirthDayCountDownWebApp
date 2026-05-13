@@ -24,11 +24,7 @@ export const CAPTION_MODES: readonly CaptionMode[] = [
 export type Photo = {
   id: string
   file: string
-  photo_vibe: string[]
-  personality_impression: string[]
-  caption_angles: string[]
-  natural_topics: string[]
-  avoid_topics: string[]
+  visuals: string[]
   displayOrder: number
 }
 
@@ -43,15 +39,14 @@ export type ModeConfigEntry = {
 export type ModeConfigFile = Record<CaptionMode, ModeConfigEntry>
 
 export type CaptionModeConfig = {
-  id: string
-  tone: string[]
-  speakingStyle: string[]
-  allowedLanguageMix: {
-    english: boolean
-    hinglish: boolean
-  }
+  id: CaptionMode
+  relationshipEnergy: string
   humorStyle: string[]
-  avoidWords: string[]
+  teasingLevel: 'wholesome' | 'playful' | 'sarcastic' | 'chaotic'
+  languageStyle: 'english' | 'hinglish' | 'mixed'
+  aggressionLevel: 'protective' | 'gentle' | 'teasing' | 'roasting'
+  reactionCategories: string[]
+  bannedPhrases: string[]
   examples: string[]
 }
 

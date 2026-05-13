@@ -37,54 +37,39 @@ function getOutputFilePath(fileName: string): string {
 }
 
 function buildPrompt(): string {
-  return `Analyze this image for generating natural Indian-style emotional captions.
+  return `Analyze this image and return ONLY simple visual hints useful for generating desi Instagram-style reaction comments.
 
-The goal is NOT to describe the image literally.
+Focus ONLY on:
+- pose
+- expression
+- selfie type
+- lighting
+- vibe
+- observable visual details
 
-The goal is to help generate:
-- playful captions
-- emotional captions
-- teasing captions
-- warm captions
-- relatable captions
-
-Focus on:
-- personality vibe
-- casual emotional feeling
-- relatable behavior
-- comfort energy
-- playful energy
-- natural human impressions
-
-Avoid:
-- poetic language
-- abstract emotions
-- philosophical descriptions
-- fashion details
-- photography terms
-- overdramatic emotional analysis
+DO NOT generate:
+- emotional analysis
+- poetic descriptions
+- personality analysis
+- deep meaning
+- aesthetic philosophy
 
 Return STRICT JSON only.
 
 Schema:
 {
-  "photo_vibe": string[],
-  "personality_impression": string[],
-  "caption_angles": string[],
-  "natural_topics": string[],
-  "avoid_topics": string[]
+  "visuals": string[]
 }
 
 Rules:
+- short phrases only
 - lowercase only
-- concise phrases only
-- relatable human observations
-- simple language
-- no poetic wording
-- no markdown
+- simple observations
+- no emotions
+- no poetry
 - no explanations
-- avoid AI sounding words
-- avoid western Tumblr tone`
+- no abstract words
+- avoid AI sounding language`
 }
 
 function cleanJsonString(text: string): string {
@@ -105,35 +90,16 @@ function validateMetadata(value: unknown): PhotoMetadata {
 
   const metadata = value as Record<string, unknown>
 
-  const photo_vibe = Array.isArray(metadata.photo_vibe)
-    ? metadata.photo_vibe.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
-    : []
-  const personality_impression = Array.isArray(metadata.personality_impression)
-    ? metadata.personality_impression.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
-    : []
-  const caption_angles = Array.isArray(metadata.caption_angles)
-    ? metadata.caption_angles.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
-    : []
-  const natural_topics = Array.isArray(metadata.natural_topics)
-    ? metadata.natural_topics.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
-    : []
-  const avoid_topics = Array.isArray(metadata.avoid_topics)
-    ? metadata.avoid_topics.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
+  const visuals = Array.isArray(metadata.visuals)
+    ? metadata.visuals.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
     : []
 
-  if (photo_vibe.length === 0) throw new Error('photo_vibe must be a non-empty array')
-  if (personality_impression.length === 0) throw new Error('personality_impression must be a non-empty array')
-  if (caption_angles.length === 0) throw new Error('caption_angles must be a non-empty array')
-  if (natural_topics.length === 0) throw new Error('natural_topics must be a non-empty array')
+  if (visuals.length === 0) throw new Error('visuals must be a non-empty array')
 
   return {
     id: '',
     file: '',
-    photo_vibe,
-    personality_impression,
-    caption_angles,
-    natural_topics,
-    avoid_topics,
+    visuals,
     displayOrder: 0,
   }
 }
@@ -199,12 +165,10 @@ async function analyzeImage(ollamaClient: typeof ollama, fileName: string, image
     let waitSeconds = 0
     const spinnerChars = ['|', '/', '-', '\\']
     let spinnerIndex = 0
-    let spinnerActive = false
 
     try {
       console.log('→ Sending request to Ollama...')
       process.stdout.write('Waiting for Ollama response... 0s |')
-      spinnerActive = true
 
       waitTimer = setInterval(() => {
         waitSeconds += 1
@@ -225,9 +189,7 @@ async function analyzeImage(ollamaClient: typeof ollama, fileName: string, image
       if (waitTimer) {
         clearInterval(waitTimer)
       }
-      if (spinnerActive) {
-        process.stdout.write('\r' + ' '.repeat(80) + '\r')
-      }
+      process.stdout.write('\r' + ' '.repeat(80) + '\r')
 
       const aiElapsed = (Date.now() - requestStart) / 1000
       const rawContent = response.message?.content ?? ''
@@ -270,8 +232,12 @@ async function assertDirectoryExists(directory: string): Promise<void> {
     if (!stats.isDirectory()) {
       throw new Error(`${directory} is not a directory`)
     }
-  } catch {
-    throw new Error(`Photos folder not found: ${directory}`)
+  } catch (error) {
+    const err = new Error(`Photos folder not found: ${directory}`)
+    if (error instanceof Error) {
+      err.cause = error
+    }
+    throw err
   }
 }
 
@@ -292,7 +258,11 @@ async function verifyOllamaConnection(client: typeof ollama): Promise<void> {
     console.log(`✓ Ollama connection successful (${formatDuration(Date.now() - start)})`)
     console.log(`✓ Using model: ${MODEL_NAME}`)
   } catch (error) {
-    throw new Error(`Ollama connectivity check failed: ${error instanceof Error ? error.message : String(error)}`)
+    const err = new Error(`Ollama connectivity check failed: ${error instanceof Error ? error.message : String(error)}`)
+    if (error instanceof Error) {
+      err.cause = error
+    }
+    throw err
   }
 }
 

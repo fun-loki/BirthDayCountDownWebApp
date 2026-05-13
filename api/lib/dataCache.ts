@@ -1,28 +1,44 @@
 import type { ModeConfigFile, Photo } from './types.js'
 import { apiLog } from './log.js'
 import photosData from '../../public/data/photos.json' with { type: 'json' }
-import modeConfigData from '../../public/data/mode-config.json' with { type: 'json' }
 
 let photos: Photo[] | null = null
 let modeConfig: ModeConfigFile | null = null
 let loggedWarm = false
 
-// Migration function to convert old photo format to new natural format
+// Migration function to convert old photo format to new simple format
 function migratePhotoFormat(oldPhoto: Record<string, unknown>): Photo {
   // If already in new format, return as-is
-  if (oldPhoto.photo_vibe && oldPhoto.personality_impression) {
+  if (oldPhoto.visuals && !oldPhoto.photo_vibe) {
     return oldPhoto as Photo
   }
 
-  // Convert old format to new format
+  // Convert old format (with emotional fields) to new simple format
+  const visuals: string[] = []
+
+  // Try to extract visual information from old fields
+  if (Array.isArray(oldPhoto.photo_vibe)) {
+    visuals.push(...oldPhoto.photo_vibe.map(String))
+  }
+  if (Array.isArray(oldPhoto.visual_style)) {
+    visuals.push(...oldPhoto.visual_style.map(String))
+  }
+  if (Array.isArray(oldPhoto.caption_angles)) {
+    visuals.push(...(oldPhoto.caption_angles as string[]).slice(0, 2))
+  }
+  if (Array.isArray(oldPhoto.natural_topics)) {
+    visuals.push(...(oldPhoto.natural_topics as string[]).slice(0, 2))
+  }
+
+  // Fallback if no visual data found
+  if (visuals.length === 0) {
+    visuals.push('casual pose', 'indoor lighting')
+  }
+
   return {
     id: String(oldPhoto.id || ''),
     file: String(oldPhoto.file || ''),
-    photo_vibe: Array.isArray(oldPhoto.visual_style) ? oldPhoto.visual_style.map(String) : ['calm', 'cozy'],
-    personality_impression: Array.isArray(oldPhoto.emotional_energy) ? oldPhoto.emotional_energy.map(String) : ['soft spoken energy'],
-    caption_angles: Array.isArray(oldPhoto.caption_inspiration) ? oldPhoto.caption_inspiration.map(String) : ['someone easy to miss'],
-    natural_topics: Array.isArray(oldPhoto.aesthetic_keywords) ? oldPhoto.aesthetic_keywords.map(String) : ['smile', 'comfort'],
-    avoid_topics: Array.isArray(oldPhoto.avoid_caption_topics) ? oldPhoto.avoid_caption_topics.map(String) : ['clothes', 'fashion'],
+    visuals: [...new Set(visuals)].slice(0, 8),
     displayOrder: Number(oldPhoto.displayOrder) || 0,
   }
 }
@@ -38,7 +54,9 @@ export function getPhotos(): Photo[] {
 
 export function getModeConfig(): ModeConfigFile {
   if (!modeConfig) {
-    modeConfig = modeConfigData as ModeConfigFile
+    // Mode config is no longer imported from JSON file - it's in the registry
+    // This maintains backward compatibility but returns empty config
+    modeConfig = {} as ModeConfigFile
   }
   maybeLogWarm()
   return modeConfig
