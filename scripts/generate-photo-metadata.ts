@@ -16,11 +16,7 @@ const MAX_RETRIES = 1
 export type PhotoMetadata = {
   id: string
   file: string
-  photo_vibe: string[]
-  personality_impression: string[]
-  caption_angles: string[]
-  natural_topics: string[]
-  avoid_topics: string[]
+  visuals: string[]
   displayOrder: number
 }
 

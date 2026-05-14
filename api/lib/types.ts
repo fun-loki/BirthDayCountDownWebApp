@@ -67,12 +67,7 @@ export type CaptionResponseBody = {
 export type AnalyzePhotoItem = {
   id: string
   file: string
-  summary: string
-  visible_details: string[]
-  mood: string
-  setting: string
-  tags: string[]
-  confidence_notes: string
+  visuals: string[]
   displayOrder: number
 }
 

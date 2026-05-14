@@ -1,1 +1,1 @@
-{"root":["./api/caption.ts","./api/lib/captionhistory.ts","./api/lib/datacache.ts","./api/lib/log.ts","./api/lib/moderegistry.ts","./api/lib/ttlcache.ts","./api/lib/types.ts","./api/lib/ai/prompts.ts","./api/lib/ai/providers.ts"],"version":"6.0.3"}
+{"root":["./api/analyze-photos.ts","./api/caption.ts","./api/lib/captionhistory.ts","./api/lib/datacache.ts","./api/lib/log.ts","./api/lib/moderegistry.ts","./api/lib/ttlcache.ts","./api/lib/types.ts","./api/lib/ai/prompts.ts","./api/lib/ai/providers.ts"],"version":"6.0.3"}

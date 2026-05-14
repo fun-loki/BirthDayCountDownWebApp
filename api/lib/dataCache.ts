@@ -1,6 +1,7 @@
 import type { ModeConfigFile, Photo } from './types.js'
 import { apiLog } from './log.js'
 import photosData from '../../public/data/photos.json' with { type: 'json' }
+import modeData from '../../public/data/mode-config.json'
 
 let photos: Photo[] | null = null
 let modeConfig: ModeConfigFile | null = null
@@ -54,9 +55,7 @@ export function getPhotos(): Photo[] {
 
 export function getModeConfig(): ModeConfigFile {
   if (!modeConfig) {
-    // Mode config is no longer imported from JSON file - it's in the registry
-    // This maintains backward compatibility but returns empty config
-    modeConfig = {} as ModeConfigFile
+    modeConfig = modeData as ModeConfigFile
   }
   maybeLogWarm()
   return modeConfig

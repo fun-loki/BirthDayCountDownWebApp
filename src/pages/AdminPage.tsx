@@ -112,12 +112,7 @@ export function AdminPage() {
                 <th />
                 <th>Order</th>
                 <th>Id / file</th>
-                <th>Summary</th>
-                <th>Details</th>
-                <th>Mood</th>
-                <th>Setting</th>
-                <th>Tags</th>
-                <th>Notes</th>
+                <th>Visuals</th>
               </tr>
             </thead>
             <tbody>
@@ -146,45 +141,8 @@ export function AdminPage() {
                   <td>
                     <textarea
                       className={styles.textarea}
-                      value={row.summary}
-                      onChange={(e) => updateRow(index, { summary: e.target.value })}
-                    />
-                  </td>
-                  <td>
-                    <textarea
-                      className={styles.textarea}
-                      value={joinLines(row.visible_details)}
-                      onChange={(e) =>
-                        updateRow(index, { visible_details: splitLines(e.target.value) })
-                      }
-                    />
-                  </td>
-                  <td>
-                    <input
-                      className={styles.input}
-                      value={row.mood}
-                      onChange={(e) => updateRow(index, { mood: e.target.value })}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      className={styles.input}
-                      value={row.setting}
-                      onChange={(e) => updateRow(index, { setting: e.target.value })}
-                    />
-                  </td>
-                  <td>
-                    <textarea
-                      className={styles.textarea}
-                      value={joinLines(row.tags)}
-                      onChange={(e) => updateRow(index, { tags: splitLines(e.target.value) })}
-                    />
-                  </td>
-                  <td>
-                    <textarea
-                      className={styles.textarea}
-                      value={row.confidence_notes}
-                      onChange={(e) => updateRow(index, { confidence_notes: e.target.value })}
+                      value={joinLines(row.visuals)}
+                      onChange={(e) => updateRow(index, { visuals: splitLines(e.target.value) })}
                     />
                   </td>
                 </tr>

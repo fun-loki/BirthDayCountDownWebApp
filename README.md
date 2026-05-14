@@ -63,7 +63,7 @@ Edit `public/data/app-config.json`:
 ## Photos and captions
 
 1. Put image files under `public/photos/`.
-2. Describe them in `public/data/photos.json` (see the sample entry). Fields `summary`, `visible_details`, `mood`, `setting`, and `tags` drive the caption prompt.
+2. Describe them in `public/data/photos.json` (see the sample entry). Fields `visuals` drive the caption prompt.
 3. Caption style per mode lives in `public/data/mode-config.json` (`model`, `temperature`, `max_tokens`, `style_instructions`).
 
 **Hourly rotation:** the active photo is chosen deterministically from `displayOrder` and the current wall-clock hour in `app-config.timezone` (same logic in `src/lib/hourlyPhoto.ts`).
@@ -100,7 +100,7 @@ Generate metadata:
 npm run generate:photos
 ```
 
-This writes a metadata array to `public/data/photos.json`. Each item includes `id`, `file`, `summary`, `visible_details`, `mood`, `setting`, `tags`, `confidence_notes`, and `displayOrder`.
+This writes a metadata array to `public/data/photos.json`. Each item includes `id`, `file`, `visuals`, and `displayOrder`.
 
 Troubleshooting:
 

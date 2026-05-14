@@ -12,6 +12,7 @@
     "generate:photos": "tsx scripts/generate-photo-metadata.ts"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "formidable": "^3.5.4",
     "image-size": "^2.0.2",
     "luxon": "^3.7.2",

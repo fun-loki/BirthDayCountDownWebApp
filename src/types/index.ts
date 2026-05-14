@@ -37,11 +37,7 @@ export type CaptionModeConfig = {
 export type Photo = {
   id: string
   file: string
-  photo_vibe: string[]
-  personality_impression: string[]
-  caption_angles: string[]
-  natural_topics: string[]
-  avoid_topics: string[]
+  visuals: string[]
   displayOrder: number
 }
 
@@ -79,11 +75,6 @@ export type CaptionResponseBody = {
 export type AnalyzePhotoItem = {
   id: string
   file: string
-  summary: string
-  visible_details: string[]
-  mood: string
-  setting: string
-  tags: string[]
-  confidence_notes: string
+  visuals: string[]
   displayOrder: number
 }

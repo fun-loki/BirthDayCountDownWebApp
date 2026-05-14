@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { randomUUID } from 'node:crypto'
 import { CAPTION_MODES, type CaptionRequestBody, type CaptionMode } from './lib/types.js'
-import { getModeConfig, getPhotos } from './lib/dataCache.js'
+import { getPhotos, getModeConfig } from './lib/dataCache.js'
 import { cacheKeyForCaption, captionCacheGet, captionCacheSet } from './lib/ttlCache.js'
 import { generateCaptionText } from './lib/ai/providers.js'
 import { apiLog } from './lib/log.js'
@@ -43,6 +43,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const photo = photos.find((p) => p.id === body.photoId)
   if (!photo) {
     res.status(404).json({ error: 'Photo not found' })
+    return
+  }
+
+  // Debug log metadata
+  apiLog('info', 'caption_metadata_loaded', {
+    reqId,
+    photoId: body.photoId,
+    visualsCount: photo.visuals?.length || 0,
+    visuals: photo.visuals,
+  })
+
+  // Validate photo metadata
+  if (!Array.isArray(photo.visuals) || photo.visuals.length === 0) {
+    apiLog('error', 'caption_invalid_visuals', {
+      reqId,
+      photoId: body.photoId,
+      visuals: photo.visuals,
+    })
+    res.status(422).json({
+      error: 'caption generation failed',
+      detail: 'missing visuals metadata'
+    })
     return
   }
 
