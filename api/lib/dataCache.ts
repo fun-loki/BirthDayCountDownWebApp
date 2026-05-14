@@ -1,11 +1,32 @@
 import type { ModeConfigFile, Photo } from './types.js'
 import { apiLog } from './log.js'
-import photosData from '../../public/data/photos.json' with { type: 'json' }
-import modeData from '../../public/data/mode-config.json'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 
 let photos: Photo[] | null = null
 let modeConfig: ModeConfigFile | null = null
 let loggedWarm = false
+
+// Load JSON data at runtime
+function loadPhotosData(): Record<string, unknown>[] {
+  try {
+    const data = readFileSync(join(process.cwd(), 'public/data/photos.json'), 'utf8')
+    return JSON.parse(data) as Record<string, unknown>[]
+  } catch (e) {
+    apiLog('error', 'photos_json_load_failed', { error: e instanceof Error ? e.message : 'Unknown error' })
+    return []
+  }
+}
+
+function loadModeData(): ModeConfigFile {
+  try {
+    const data = readFileSync(join(process.cwd(), 'public/data/mode-config.json'), 'utf8')
+    return JSON.parse(data) as ModeConfigFile
+  } catch (e) {
+    apiLog('error', 'mode_config_json_load_failed', { error: e instanceof Error ? e.message : 'Unknown error' })
+    throw new Error('Failed to load mode configuration')
+  }
+}
 
 // Migration function to convert old photo format to new simple format
 function migratePhotoFormat(oldPhoto: Record<string, unknown>): Photo {
@@ -46,7 +67,7 @@ function migratePhotoFormat(oldPhoto: Record<string, unknown>): Photo {
 
 export function getPhotos(): Photo[] {
   if (!photos) {
-    const rawPhotos = photosData as Record<string, unknown>[]
+    const rawPhotos = loadPhotosData()
     photos = rawPhotos.map(migratePhotoFormat)
   }
   maybeLogWarm()
@@ -55,7 +76,7 @@ export function getPhotos(): Photo[] {
 
 export function getModeConfig(): ModeConfigFile {
   if (!modeConfig) {
-    modeConfig = modeData as ModeConfigFile
+    modeConfig = loadModeData()
   }
   maybeLogWarm()
   return modeConfig

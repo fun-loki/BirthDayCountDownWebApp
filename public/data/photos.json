@@ -3,12 +3,13 @@
     "id": "photo-001",
     "file": "/photos/photo-001.jpg",
     "visuals": [
-      "head tilt",
-      "slightly smiling",
+      "slightly tilted head",
+      "soft smile",
       "close-up selfie",
-      "soft lighting",
+      "natural lighting",
       "casual vibe",
-      "textured sweater"
+      "oversized sweater",
+      "blurred background"
     ],
     "displayOrder": 1
   }
