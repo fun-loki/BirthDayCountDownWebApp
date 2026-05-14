@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto'
 import { CAPTION_MODES, type CaptionRequestBody, type CaptionMode } from './lib/types.js'
 import { getPhotos, getModeConfig } from './lib/dataCache.js'
 import { cacheKeyForCaption, captionCacheGet, captionCacheSet } from './lib/ttlCache.js'
-import { generateCaptionText } from './lib/ai/providers.js'
+import { CaptionGeneratorService } from './lib/services/caption/caption-generator.service.js'
 import { apiLog } from './lib/log.js'
 
 function isCaptionMode(m: string): m is CaptionMode {
@@ -104,7 +104,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     })
 
     try {
-      const { text, provider, model } = await generateCaptionText({
+      const captionGenerator = new CaptionGeneratorService()
+      const { text, provider, model } = await captionGenerator.generateCaptionText({
         photo,
         mode: body.mode,
         entry,

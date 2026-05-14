@@ -6,6 +6,7 @@ import type { File } from 'formidable'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import type { AnalyzePhotoItem, AnalyzeResponseBody } from './lib/types.js'
 import { apiLog } from './lib/log.js'
+import { VISION_ANALYSIS_PROMPT } from './lib/prompts/metadata/vision-analysis.prompt.js'
 
 export const config = {
   api: {
@@ -31,10 +32,7 @@ async function visionDescribe(opts: {
   const buffer = readFileSync(opts.imagePath)
   const b64 = buffer.toString('base64')
 
-  const system = `You analyze photos for a private birthday countdown site.
-Return a single JSON object with keys:
-- visuals (array of short strings, 3-8 items describing observable visual details)
-No markdown, no extra keys. Output only valid JSON.`
+  const system = VISION_ANALYSIS_PROMPT
 
   const genAI = new GoogleGenerativeAI(opts.apiKey)
   const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
