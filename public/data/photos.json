@@ -3,13 +3,11 @@
     "id": "photo-001",
     "file": "/photos/photo-001.jpg",
     "visuals": [
-      "slightly tilted head",
       "soft smile",
       "close-up selfie",
       "natural lighting",
       "casual vibe",
-      "oversized sweater",
-      "blurred background"
+      "blue top" 
     ],
     "displayOrder": 1
   }
