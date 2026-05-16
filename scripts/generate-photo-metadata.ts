@@ -17,6 +17,8 @@ export type PhotoMetadata = {
   id: string
   file: string
   visuals: string[]
+  gender: 'female' | 'male' | 'unknown'
+  person_vibe: string[]
   displayOrder: number
 }
 
@@ -42,6 +44,8 @@ Focus ONLY on:
 - lighting
 - vibe
 - observable visual details
+- the person's visible gender if it is clear
+- the person's visible energy/style
 
 DO NOT generate:
 - emotional analysis
@@ -55,6 +59,8 @@ Return STRICT JSON only.
 Schema:
 {
   "visuals": string[]
+  "gender": "female" | "male" | "unknown"
+  "person_vibe": string[]
 }
 
 Rules:
@@ -65,7 +71,8 @@ Rules:
 - no poetry
 - no explanations
 - no abstract words
-- avoid AI sounding language`
+- avoid AI sounding language
+- if gender is not clearly visible, use "unknown"`
 }
 
 function cleanJsonString(text: string): string {
@@ -79,6 +86,22 @@ function cleanJsonString(text: string): string {
   return withoutFences
 }
 
+function normalizeGender(value: unknown): PhotoMetadata['gender'] {
+  const raw = typeof value === 'string' ? value.trim().toLowerCase() : ''
+  if (raw === 'female' || raw === 'woman' || raw === 'girl') return 'female'
+  if (raw === 'male' || raw === 'man' || raw === 'boy') return 'male'
+  if (raw === 'unknown' || raw === 'unsure' || raw === 'ambiguous') return 'unknown'
+  return 'female'
+}
+
+function normalizeArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+  return value
+    .map(String)
+    .map((item) => item.trim().toLowerCase())
+    .filter(Boolean)
+}
+
 function validateMetadata(value: unknown): PhotoMetadata {
   if (typeof value !== 'object' || value === null) {
     throw new Error('Metadata is not an object')
@@ -86,9 +109,9 @@ function validateMetadata(value: unknown): PhotoMetadata {
 
   const metadata = value as Record<string, unknown>
 
-  const visuals = Array.isArray(metadata.visuals)
-    ? metadata.visuals.map(String).map((item) => item.trim().toLowerCase()).filter(Boolean)
-    : []
+  const visuals = normalizeArray(metadata.visuals)
+  const personVibe = normalizeArray(metadata.person_vibe)
+  const gender = normalizeGender(metadata.gender)
 
   if (visuals.length === 0) throw new Error('visuals must be a non-empty array')
 
@@ -96,6 +119,8 @@ function validateMetadata(value: unknown): PhotoMetadata {
     id: '',
     file: '',
     visuals,
+    gender,
+    person_vibe: personVibe.slice(0, 4),
     displayOrder: 0,
   }
 }

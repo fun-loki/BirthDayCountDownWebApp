@@ -4,7 +4,7 @@ import { readFileSync, unlinkSync } from 'node:fs'
 import formidable from 'formidable'
 import type { File } from 'formidable'
 import { GoogleGenerativeAI } from '@google/generative-ai'
-import type { AnalyzePhotoItem, AnalyzeResponseBody } from './lib/types.js'
+import type { AnalyzePhotoItem, AnalyzeResponseBody, Gender } from './lib/types.js'
 import { apiLog } from './lib/log.js'
 import { VISION_ANALYSIS_PROMPT } from './lib/prompts/metadata/vision-analysis.prompt.js'
 
@@ -22,6 +22,33 @@ function collectFiles(files: formidable.Files): File[] {
     else out.push(v)
   }
   return out
+}
+
+function cleanJsonString(text: string): string {
+  const trimmed = text.trim()
+  const withoutFences = trimmed.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '')
+  const firstBrace = withoutFences.indexOf('{')
+  const lastBrace = withoutFences.lastIndexOf('}')
+  if (firstBrace >= 0 && lastBrace > firstBrace) {
+    return withoutFences.slice(firstBrace, lastBrace + 1)
+  }
+  return withoutFences
+}
+
+function normalizeGender(value: unknown): Gender {
+  const raw = typeof value === 'string' ? value.trim().toLowerCase() : ''
+  if (raw === 'female' || raw === 'woman' || raw === 'girl') return 'female'
+  if (raw === 'male' || raw === 'man' || raw === 'boy') return 'male'
+  if (raw === 'unknown' || raw === 'unsure' || raw === 'ambiguous') return 'unknown'
+  return 'female'
+}
+
+function normalizeVibe(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+  return value
+    .map(String)
+    .map((item) => item.trim())
+    .filter(Boolean)
 }
 
 async function visionDescribe(opts: {
@@ -57,8 +84,10 @@ async function visionDescribe(opts: {
 
     if (!text) throw new Error('Empty Gemini response')
 
-    const parsed = JSON.parse(text) as {
+    const parsed = JSON.parse(cleanJsonString(text)) as {
       visuals?: unknown
+      gender?: unknown
+      person_vibe?: unknown
     }
 
     const visuals = Array.isArray(parsed.visuals)
@@ -69,6 +98,8 @@ async function visionDescribe(opts: {
 
     return {
       visuals,
+      gender: normalizeGender(parsed.gender),
+      person_vibe: normalizeVibe(parsed.person_vibe),
     }
   } catch (e) {
     const message = e instanceof Error ? e.message : 'Gemini vision failed'
@@ -146,6 +177,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         id,
         file: publicPath,
         visuals: meta.visuals,
+        gender: meta.gender,
+        person_vibe: meta.person_vibe,
         displayOrder: order,
       })
     }

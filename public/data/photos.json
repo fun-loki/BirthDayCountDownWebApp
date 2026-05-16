@@ -3,11 +3,21 @@
     "id": "photo-001",
     "file": "/photos/photo-001.jpg",
     "visuals": [
-      "soft smile",
-      "close-up selfie",
-      "natural lighting",
-      "casual vibe",
-      "blue top" 
+      "selfie pose",
+      "head tilt",
+      "looking at camera",
+      "soft lighting",
+      "close-up",
+      "natural light",
+      "skin visible",
+      "hair visible"
+    ],
+    "gender": "female",
+    "person_vibe": [
+      "casual",
+      "relaxed",
+      "simple",
+      "chill"
     ],
     "displayOrder": 1
   }

@@ -50,6 +50,14 @@ export abstract class BaseMode {
     const bannedPhrases = this.getBannedPhrasesLine()
     const reactionBias = this.getReactionBias()
     const languageStyle = this.getLanguageInstructions()
+    const gender = photo.gender ?? 'female'
+    const genderHint =
+      gender === 'unknown'
+        ? 'Subject gender is unknown. Use natural, gender-neutral language and avoid wrong gendered terms.'
+        : `Subject gender: ${gender}. Use appropriate wording and avoid gender-mismatched phrasing.`
+    const vibeHint = photo.person_vibe?.length
+      ? `Person vibe: ${photo.person_vibe.join(', ')}. Use this to shape the tone naturally.`
+      : ''
 
     return `REACTION COMMENT TASK:
 Someone just posted this photo on Instagram/WhatsApp. Write ONE authentic desi reaction comment from this ${this.relationshipEnergy} perspective.
@@ -65,7 +73,9 @@ ${this.getExamplesBlock()}
 
 Visual context from photo:
 - Observable details: ${photo.visuals.join(', ')}
-
+- ${genderHint}
+${vibeHint ? `- ${vibeHint}
+` : ''}
 React naturally to these visual details. Keep it short, real, and authentic to this relationship type. No overthinking. No poetry. Just real reaction.
 
 Already used recently - AVOID repeating:

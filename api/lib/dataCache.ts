@@ -28,40 +28,42 @@ function loadModeData(): ModeConfigFile {
   }
 }
 
-// Migration function to convert old photo format to new simple format
-function migratePhotoFormat(oldPhoto: Record<string, unknown>): Photo {
-  // If already in new format, return as-is
-  if (oldPhoto.visuals && !oldPhoto.photo_vibe) {
-    return oldPhoto as Photo
-  }
+function normalizeGender(value: unknown): Photo['gender'] {
+  const raw = typeof value === 'string' ? value.trim().toLowerCase() : ''
+  if (raw === 'female' || raw === 'woman' || raw === 'girl') return 'female'
+  if (raw === 'male' || raw === 'man' || raw === 'boy') return 'male'
+  if (raw === 'unknown' || raw === 'unsure' || raw === 'ambiguous') return 'unknown'
+  return 'female'
+}
 
-  // Convert old format (with emotional fields) to new simple format
-  const visuals: string[] = []
+function normalizeArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+  return value
+    .map(String)
+    .map((item) => item.trim())
+    .filter(Boolean)
+}
 
-  // Try to extract visual information from old fields
-  if (Array.isArray(oldPhoto.photo_vibe)) {
-    visuals.push(...oldPhoto.photo_vibe.map(String))
-  }
-  if (Array.isArray(oldPhoto.visual_style)) {
-    visuals.push(...oldPhoto.visual_style.map(String))
-  }
-  if (Array.isArray(oldPhoto.caption_angles)) {
-    visuals.push(...(oldPhoto.caption_angles as string[]).slice(0, 2))
-  }
-  if (Array.isArray(oldPhoto.natural_topics)) {
-    visuals.push(...(oldPhoto.natural_topics as string[]).slice(0, 2))
-  }
+function migratePhotoFormat(rawPhoto: Record<string, unknown>): Photo {
+  const visuals = normalizeArray(rawPhoto.visuals)
+  const legacyVisuals = [
+    ...normalizeArray(rawPhoto.photo_vibe),
+    ...normalizeArray(rawPhoto.visual_style),
+    ...normalizeArray(rawPhoto.caption_angles)?.slice(0, 2),
+    ...normalizeArray(rawPhoto.natural_topics)?.slice(0, 2),
+  ].filter(Boolean)
 
-  // Fallback if no visual data found
-  if (visuals.length === 0) {
-    visuals.push('casual pose', 'indoor lighting')
-  }
+  const finalVisuals = visuals.length > 0 ? visuals : legacyVisuals
+  const sanitizedVisuals = finalVisuals.length > 0 ? [...new Set(finalVisuals)].slice(0, 8) : ['casual pose', 'indoor lighting']
 
+  const personVibe = normalizeArray(rawPhoto.person_vibe)
   return {
-    id: String(oldPhoto.id || ''),
-    file: String(oldPhoto.file || ''),
-    visuals: [...new Set(visuals)].slice(0, 8),
-    displayOrder: Number(oldPhoto.displayOrder) || 0,
+    id: String(rawPhoto.id || ''),
+    file: String(rawPhoto.file || ''),
+    visuals: sanitizedVisuals,
+    gender: normalizeGender(rawPhoto.gender),
+    person_vibe: personVibe.length > 0 ? personVibe.slice(0, 4) : [],
+    displayOrder: Number(rawPhoto.displayOrder) || 0,
   }
 }
 

@@ -34,10 +34,14 @@ export type CaptionModeConfig = {
   examples: string[]
 }
 
+export type Gender = 'female' | 'male' | 'unknown'
+
 export type Photo = {
   id: string
   file: string
   visuals: string[]
+  gender?: Gender
+  person_vibe?: string[]
   displayOrder: number
 }
 
@@ -76,5 +80,7 @@ export type AnalyzePhotoItem = {
   id: string
   file: string
   visuals: string[]
+  gender?: Gender
+  person_vibe?: string[]
   displayOrder: number
 }
